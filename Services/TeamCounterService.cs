@@ -36,7 +36,7 @@ public sealed class TeamCounterService
 
         var candidates = catalog
             .Where(hero => !enemyIds.Contains(hero.Id))
-            .Select(hero => ScoreCandidate(hero, matchupMaps, isThai))
+            .Select(hero => ScoreCandidate(hero, enemies, matchupMaps, isThai))
             .Where(candidate => candidate.MatchupCount >= 3)
             .OrderByDescending(candidate => candidate.Recommendation.OverallScore)
             .ToList();
@@ -74,19 +74,33 @@ public sealed class TeamCounterService
 
     private static ScoredCandidate ScoreCandidate(
         HeroDirectoryEntry hero,
+        IReadOnlyList<HeroDirectoryEntry> enemies,
         IReadOnlyList<IReadOnlyDictionary<int, HeroMatchupStat>> matchupMaps,
         bool isThai)
     {
-        var stats = matchupMaps
-            .Select(map => map.TryGetValue(hero.Id, out var matchup) ? matchup : null)
-            .Where(matchup => matchup is not null && matchup.GamesPlayed >= 20)
-            .Cast<HeroMatchupStat>()
+        var matchups = matchupMaps
+            .Select((map, index) => new
+            {
+                EnemyIndex = index,
+                Stat = map.TryGetValue(hero.Id, out var matchup) ? matchup : null
+            })
+            .Where(item => item.Stat is not null && item.Stat.GamesPlayed >= 20)
             .ToList();
+        var stats = matchups.Select(item => item.Stat!).ToList();
         var totalWeight = stats.Sum(stat => Math.Sqrt(stat.GamesPlayed));
         var counterWinRate = totalWeight > 0
             ? stats.Sum(stat => (100 - stat.SelectedHeroWinRate) * Math.Sqrt(stat.GamesPlayed)) / totalWeight
             : 50;
         var overallScore = (hero.WinRate * 0.35) + (counterWinRate * 0.65);
+        var strongAgainst = matchups
+            .Select(item => new TeamCounterTarget
+            {
+                EnemyHero = EnemyName(item.EnemyIndex),
+                CounterWinRate = 100 - item.Stat!.SelectedHeroWinRate
+            })
+            .OrderByDescending(item => item.CounterWinRate)
+            .Take(3)
+            .ToList();
         var recommendation = new TeamCounterHeroRecommendation
         {
             HeroId = hero.Id,
@@ -95,14 +109,44 @@ public sealed class TeamCounterService
             WinRate = hero.WinRate,
             TeamCounterWinRate = counterWinRate,
             OverallScore = overallScore,
+            StrongAgainst = strongAgainst,
             ScoreText = isThai
-                ? $"คะแนน {overallScore:0.0} • Win {hero.WinRate:0.0}% • สวนทีม {counterWinRate:0.0}%"
-                : $"Score {overallScore:0.0} • Win {hero.WinRate:0.0}% • Team counter {counterWinRate:0.0}%",
-            Reason = isThai
-                ? $"มีข้อมูล matchup ครบ {stats.Count}/5 ตัว"
-                : $"Matchup evidence against {stats.Count}/5 enemies"
+                ? $"รวม {overallScore:0.0} • Win {hero.WinRate:0.0}% • สวนทีม {counterWinRate:0.0}%"
+                : $"Overall {overallScore:0.0} • Win {hero.WinRate:0.0}% • Team counter {counterWinRate:0.0}%",
+            Reason = BuildQuickReason(hero.Name, strongAgainst, isThai)
         };
         return new ScoredCandidate(hero, recommendation, stats.Count);
+
+        string EnemyName(int index) => index >= 0 && index < enemies.Count
+            ? enemies[index].Name
+            : "Unknown";
+    }
+
+    private static string BuildQuickReason(
+        string heroName,
+        IReadOnlyList<TeamCounterTarget> targets,
+        bool isThai)
+    {
+        var targetText = string.Join(" • ", targets.Take(2).Select(target => $"[{target.EnemyHero}]"));
+        var action = heroName switch
+        {
+            "Anti-Mage" => isThai ? "เบิร์นมานา" : "Burn mana",
+            "Invoker" => isThai ? "EMP เผามานา" : "Drain mana with EMP",
+            "Lion" => isThai ? "ดูดมานาและล็อก" : "Drain mana and disable",
+            "Ancient Apparition" => isThai ? "ตัดการฟื้นฟู" : "Stop healing",
+            "Doom" => isThai ? "ปิดสกิลหลัก" : "Disable key abilities",
+            "Silencer" => isThai ? "ใบ้สกิลทั้งไฟต์" : "Silence the fight",
+            "Shadow Demon" => isThai ? "สร้างภาพโจมตีกลับ" : "Turn illusions against them",
+            "Axe" => isThai ? "บังคับโจมตีและล็อก" : "Force attacks and lock down",
+            "Nyx Assassin" => isThai ? "ล้วงและหยุดคอมโบ" : "Burst and interrupt combos",
+            "Viper" => isThai ? "ปิด passive และกดเลน" : "Break passives and pressure lane",
+            "Shadow Shaman" => isThai ? "ล็อกยาวแล้วปิดเป้า" : "Chain-disable the target",
+            "Bane" => isThai ? "จับล็อกตัวหลัก" : "Lock down the core",
+            "Disruptor" => isThai ? "ดึงกลับและปิดพื้นที่" : "Glimpse and zone",
+            "Outworld Destroyer" => isThai ? "กักตัวแล้วระเบิดมานา" : "Isolate and punish mana",
+            _ => isThai ? "กด matchup และคุมไฟต์" : "Pressure matchup and control fights"
+        };
+        return $"{action}: {targetText}";
     }
 
     private static List<TeamCounterLineup> BuildTeams(IReadOnlyList<ScoredCandidate> candidates, bool isThai)
@@ -140,7 +184,10 @@ public sealed class TeamCounterService
                     Hero = selected.Hero.Name,
                     Role = slot.Name,
                     IconPath = selected.Hero.IconPath,
-                    Score = selected.Recommendation.OverallScore
+                    Score = selected.Recommendation.OverallScore,
+                    Targets = string.Join(" • ", selected.Recommendation.StrongAgainst
+                        .Take(2)
+                        .Select(target => $"[{target.EnemyHero}]"))
                 });
             }
 
@@ -178,7 +225,12 @@ public sealed class TeamCounterService
                 hero.Hero,
                 hero.WinRate,
                 hero.TeamCounterWinRate,
-                hero.OverallScore
+                hero.OverallScore,
+                strongAgainst = hero.StrongAgainst.Select(target => new
+                {
+                    target.EnemyHero,
+                    target.CounterWinRate
+                })
             }),
             teams = result.Teams.Select(team => new
             {
@@ -188,8 +240,11 @@ public sealed class TeamCounterService
         };
         var prompt = $"""
             You are a Dota 2 draft coach. Analyze only the supplied OpenDota-derived scores. Respond in {language}.
-            Do not change heroes, scores, or teams. Give one concise overall summary, one short reason for each ranked
-            candidate, and a title plus short strategy for each of the three teams. Canonical hero names stay English.
+            Do not change heroes, scores, or teams. Give one concise overall summary, one very short tactical reason
+            for each ranked candidate, and a title plus short strategy for each of the three teams. Every hero reason
+            must name one or two supplied enemy targets in square brackets and state the mechanic/action used against
+            them in at most 12 words, for example "Burn mana: [Medusa] • kite: [Huskar]". Use known Dota hero-kit
+            interactions but never invent statistics. Canonical hero names stay English.
             Input: {JsonSerializer.Serialize(input)}
             """;
         var schema = new

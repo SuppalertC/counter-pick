@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using DotaComboBoard.Models;
 using DotaComboBoard.Services;
 
@@ -20,7 +21,28 @@ public partial class HeroCounterWindow : Window
         _teamCounterService = new TeamCounterService(_metaService, config);
         ApplyLanguage();
         UpdateEnemySelection();
-        Loaded += async (_, _) => await LoadHeroesAsync();
+        Loaded += async (_, _) =>
+        {
+            FitToCurrentScreen();
+            await LoadHeroesAsync();
+        };
+    }
+
+    private void FitToCurrentScreen()
+    {
+        var ownerHandle = Owner is null ? IntPtr.Zero : new WindowInteropHelper(Owner).Handle;
+        var screen = System.Windows.Forms.Screen.FromHandle(ownerHandle);
+        var availableWidth = screen.WorkingArea.Width;
+        var availableHeight = screen.WorkingArea.Height;
+
+        MinWidth = Math.Min(820, availableWidth);
+        MinHeight = Math.Min(600, availableHeight);
+        MaxWidth = availableWidth;
+        MaxHeight = availableHeight;
+        Width = Math.Min(1180, Math.Max(MinWidth, availableWidth - 32));
+        Height = Math.Min(820, Math.Max(MinHeight, availableHeight - 32));
+        Left = screen.WorkingArea.Left + (availableWidth - Width) / 2;
+        Top = screen.WorkingArea.Top + (availableHeight - Height) / 2;
     }
 
     private async Task LoadHeroesAsync()
@@ -102,6 +124,8 @@ public partial class HeroCounterWindow : Window
 
         AnalyzeTeamButton.IsEnabled = false;
         ClearTeamButton.IsEnabled = false;
+        TeamPickerPanel.Visibility = Visibility.Collapsed;
+        TeamResultContainer.Visibility = Visibility.Visible;
         TeamEmptyResultText.Visibility = Visibility.Collapsed;
         TeamResultScroller.Visibility = Visibility.Collapsed;
         TeamLoadingPanel.Visibility = Visibility.Visible;
@@ -143,12 +167,20 @@ public partial class HeroCounterWindow : Window
 
     private void ResetTeamResult()
     {
+        TeamPickerPanel.Visibility = Visibility.Visible;
+        TeamResultContainer.Visibility = Visibility.Collapsed;
         TeamLoadingPanel.Visibility = Visibility.Collapsed;
         TeamResultScroller.Visibility = Visibility.Collapsed;
         TeamEmptyResultText.Text = _isThai
             ? "เลือกฮีโร่ศัตรู 5 ตัว แล้วกดวิเคราะห์ทั้งทีม"
             : "Select five enemy heroes, then analyze the full matchup.";
         TeamEmptyResultText.Visibility = Visibility.Visible;
+    }
+
+    private void BackToTeamPickerButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        TeamResultContainer.Visibility = Visibility.Collapsed;
+        TeamPickerPanel.Visibility = Visibility.Visible;
     }
 
     private async void HeroButton_Click(object sender, RoutedEventArgs eventArgs)
@@ -206,6 +238,8 @@ public partial class HeroCounterWindow : Window
         ClearTeamButton.Content = _isThai ? "ล้าง" : "CLEAR";
         AnalyzeTeamButton.Content = _isThai ? "วิเคราะห์ 5v5" : "ANALYZE 5v5";
         TeamLoadingText.Text = _isThai ? "กำลังรวม Win Rate + Team Counter + Gemini..." : "SCORING WIN RATE + TEAM COUNTER + GEMINI...";
+        ResultTitleText.Text = _isThai ? "ผลวิเคราะห์ทีมสวน 5v5" : "5v5 COUNTER RESULT";
+        BackToTeamPickerButton.Content = _isThai ? "← กลับไปเลือกฮีโร่" : "← BACK TO HEROES";
         RecommendedHeroesHeaderText.Text = _isThai ? "ฮีโร่ที่ควรหยิบสวนมากที่สุด" : "BEST COUNTER PICKS";
         RecommendedTeamsHeaderText.Text = _isThai ? "3 ทีมที่เหมาะปะทะทั้งชุด" : "TOP 3 COUNTER TEAMS";
         ResetTeamResult();

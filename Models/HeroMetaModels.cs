@@ -57,9 +57,19 @@ public sealed class TeamCounterHeroRecommendation
     public double TeamCounterWinRate { get; set; }
     public double OverallScore { get; set; }
     public string Reason { get; set; } = string.Empty;
+    public List<TeamCounterTarget> StrongAgainst { get; set; } = [];
 
     [JsonIgnore]
     public string ScoreText { get; set; } = string.Empty;
+}
+
+public sealed class TeamCounterTarget
+{
+    public string EnemyHero { get; set; } = string.Empty;
+    public double CounterWinRate { get; set; }
+
+    [JsonIgnore]
+    public string DisplayText => $"[{EnemyHero}] {CounterWinRate:0.0}%";
 }
 
 public sealed class TeamCounterLineup
@@ -77,6 +87,7 @@ public sealed class TeamCounterPick
     public string Role { get; set; } = string.Empty;
     public string IconPath { get; set; } = string.Empty;
     public double Score { get; set; }
+    public string Targets { get; set; } = string.Empty;
 }
 
 public sealed class MetaCounterAnalysis
