@@ -1,0 +1,213 @@
+<Window x:Class="DotaComboBoard.HeroCounterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hero Counter Finder" Width="840" Height="900" MinWidth="720" MinHeight="680"
+        Background="{StaticResource AppBackground}" Foreground="{StaticResource PrimaryText}"
+        FontFamily="{DynamicResource AppFont}" FontSize="14" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <SolidColorBrush x:Key="CounterCard" Color="#161C23" />
+        <SolidColorBrush x:Key="CounterRaised" Color="#1C242D" />
+
+        <DataTemplate x:Key="HeroPickerTemplate">
+            <Button Width="94" Height="78" Margin="3" Padding="4" Tag="{Binding}"
+                    AutomationProperties.Name="{Binding Name}" Click="HeroButton_Click">
+                <StackPanel>
+                    <Image Source="{Binding IconPath}" Width="40" Height="40" Stretch="UniformToFill" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding Name}" FontSize="10" TextAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+        <DataTemplate x:Key="TeamHeroPickerTemplate">
+            <Button Width="94" Height="78" Margin="3" Padding="4" Tag="{Binding}"
+                    AutomationProperties.Name="{Binding Name}" Click="TeamHeroButton_Click">
+                <StackPanel>
+                    <Image Source="{Binding IconPath}" Width="40" Height="40" Stretch="UniformToFill" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding Name}" FontSize="10" TextAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+        <DataTemplate x:Key="SelectedEnemyTemplate">
+            <Button Width="126" Margin="0,0,7,7" Padding="7" Tag="{Binding}"
+                    AutomationProperties.Name="{Binding Name, StringFormat='Remove {0}'}"
+                    Click="RemoveEnemyButton_Click" ToolTip="Remove from enemy team">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="38" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <Image Width="34" Height="34" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                    <StackPanel Grid.Column="1" Margin="7,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="REMOVE ×" FontSize="9" Foreground="{StaticResource SecondaryText}" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </DataTemplate>
+        <DataTemplate x:Key="MatchupTemplate">
+            <Border Margin="0,0,0,6" Background="{StaticResource CounterCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="7">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="40" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <Image Source="{Binding IconPath}" Width="34" Height="34" Stretch="UniformToFill" />
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="{Binding Hero}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Summary}" FontSize="10" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="TeamRecommendationTemplate">
+            <Border Margin="0,0,0,6" Background="{StaticResource CounterCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="8">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="46" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <Image Width="40" Height="40" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                    <StackPanel Grid.Column="1" Margin="8,0,8,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Hero}" FontWeight="Bold" />
+                        <TextBlock Text="{Binding ScoreText}" FontSize="10" Foreground="#71D09B" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding Reason}" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="TeamLineupTemplate">
+            <Border Margin="0,0,0,10" Background="{StaticResource CounterRaised}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="11">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource AccentBrush}" FontSize="17" FontWeight="Bold" />
+                    <TextBlock Margin="0,3,0,9" Text="{Binding Strategy}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Picks}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="142" Margin="0,0,7,7" Background="#11161C" CornerRadius="6" Padding="7">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="38" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <Image Width="34" Height="34" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                        <StackPanel Grid.Column="1" Margin="7,0,0,0">
+                                            <TextBlock Text="{Binding Hero}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Role}" FontSize="9" Foreground="{StaticResource SecondaryText}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <Style x:Key="HeroWrapPanelStyle" TargetType="ItemsControl">
+            <Setter Property="ItemsPanel"><Setter.Value><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></Setter.Value></Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="TitleText" Text="HERO COUNTER FINDER" FontSize="23" FontWeight="Bold" />
+                <TextBlock x:Name="SubtitleText" Text="Search one hero or build a full 5v5 counter draft." Foreground="{StaticResource SecondaryText}" />
+            </StackPanel>
+            <Button x:Name="CloseButton" Grid.Column="1" Content="CLOSE" Click="CloseButton_Click" />
+        </Grid>
+
+        <TextBox x:Name="SearchBox" Grid.Row="1" Margin="0,14,0,12" Padding="10,7"
+                 Background="#171E26" Foreground="{StaticResource PrimaryText}" BorderBrush="{StaticResource BorderBrush}"
+                 TextChanged="SearchBox_TextChanged" />
+
+        <TabControl x:Name="ModeTabs" Grid.Row="2" Background="{StaticResource PanelBackground}">
+            <TabItem x:Name="SingleModeTab" Header="1 HERO">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions><RowDefinition Height="0.48*" /><RowDefinition Height="10" /><RowDefinition Height="0.52*" /></Grid.RowDefinitions>
+                    <TabControl x:Name="AttributeTabs" Background="{StaticResource PanelBackground}">
+                        <TabItem Header="STR"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="StrengthItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource HeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="AGI"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="AgilityItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource HeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="INT"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="IntelligenceItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource HeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="UNI"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="UniversalItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource HeroPickerTemplate}" /></ScrollViewer></TabItem>
+                    </TabControl>
+
+                    <Border Grid.Row="2" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12">
+                        <Grid>
+                            <TextBlock x:Name="EmptyResultText" Text="Select a hero to view counters and favorable matchups." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                            <Grid x:Name="ResultPanel" Visibility="Collapsed">
+                                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="10" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image x:Name="SelectedHeroIcon" Width="44" Height="44" Stretch="UniformToFill" />
+                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock x:Name="SelectedHeroText" FontSize="19" FontWeight="Bold" />
+                                        <TextBlock x:Name="SelectedHeroMetaText" Foreground="{StaticResource SecondaryText}" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock x:Name="CounterHeaderText" Text="DISADVANTAGED VS" Foreground="{StaticResource AccentBrush}" FontWeight="Bold" Margin="0,0,0,7" />
+                                            <ItemsControl x:Name="CounterItems" ItemTemplate="{StaticResource MatchupTemplate}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock x:Name="AdvantageHeaderText" Text="ADVANTAGED VS" Foreground="#71D09B" FontWeight="Bold" Margin="0,0,0,7" />
+                                            <ItemsControl x:Name="AdvantageItems" ItemTemplate="{StaticResource MatchupTemplate}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Grid>
+                            <StackPanel x:Name="LoadingPanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock x:Name="LoadingText" Text="LOADING MATCHUPS..." Foreground="{StaticResource AccentBrush}" />
+                                <ProgressBar Width="240" Height="4" Margin="0,10,0,0" IsIndeterminate="True" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="TeamModeTab" Header="5v5 VERSUS">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="0.48*" /><RowDefinition Height="10" /><RowDefinition Height="0.52*" /></Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock x:Name="EnemyTeamHeaderText" Text="ENEMY TEAM — SELECT 5" Foreground="{StaticResource AccentBrush}" FontWeight="Bold" />
+                            <TextBlock x:Name="SelectedCountText" Margin="0,2,0,0" Foreground="{StaticResource SecondaryText}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button x:Name="ClearTeamButton" Margin="0,0,7,0" Content="CLEAR" Click="ClearTeamButton_Click" />
+                            <Button x:Name="AnalyzeTeamButton" Content="ANALYZE 5v5" Background="{StaticResource AccentBrush}" IsEnabled="False" Click="AnalyzeTeamButton_Click" />
+                        </StackPanel>
+                    </Grid>
+                    <ItemsControl x:Name="SelectedEnemyItems" Grid.Row="1" Margin="0,10,0,7" ItemTemplate="{StaticResource SelectedEnemyTemplate}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <TabControl Grid.Row="2" Background="{StaticResource PanelBackground}">
+                        <TabItem Header="STR"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="TeamStrengthItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource TeamHeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="AGI"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="TeamAgilityItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource TeamHeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="INT"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="TeamIntelligenceItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource TeamHeroPickerTemplate}" /></ScrollViewer></TabItem>
+                        <TabItem Header="UNI"><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="TeamUniversalItems" Style="{StaticResource HeroWrapPanelStyle}" ItemTemplate="{StaticResource TeamHeroPickerTemplate}" /></ScrollViewer></TabItem>
+                    </TabControl>
+
+                    <Border Grid.Row="4" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="12">
+                        <Grid>
+                            <TextBlock x:Name="TeamEmptyResultText" Text="Select five enemy heroes, then analyze the full matchup." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                            <StackPanel x:Name="TeamLoadingPanel" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock x:Name="TeamLoadingText" Text="SCORING 5v5 MATCHUPS..." Foreground="{StaticResource AccentBrush}" />
+                                <ProgressBar Width="280" Height="4" Margin="0,10,0,0" IsIndeterminate="True" />
+                            </StackPanel>
+                            <ScrollViewer x:Name="TeamResultScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Visibility="Collapsed">
+                                <StackPanel>
+                                    <Border Background="#11161C" CornerRadius="7" Padding="10">
+                                        <StackPanel>
+                                            <TextBlock x:Name="AiSummaryHeaderText" Text="FAST AI SUMMARY" Foreground="#F4C46A" FontWeight="Bold" />
+                                            <TextBlock x:Name="AiSummaryText" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBlock x:Name="RecommendedHeroesHeaderText" Margin="0,15,0,7" Text="BEST COUNTER PICKS" Foreground="{StaticResource AccentBrush}" FontSize="17" FontWeight="Bold" />
+                                    <ItemsControl x:Name="RecommendedHeroItems" ItemTemplate="{StaticResource TeamRecommendationTemplate}" />
+                                    <TextBlock x:Name="RecommendedTeamsHeaderText" Margin="0,15,0,7" Text="TOP 3 COUNTER TEAMS" Foreground="{StaticResource AccentBrush}" FontSize="17" FontWeight="Bold" />
+                                    <ItemsControl x:Name="RecommendedTeamItems" ItemTemplate="{StaticResource TeamLineupTemplate}" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <TextBlock x:Name="FooterText" Grid.Row="3" Margin="2,10,2,0" Foreground="{StaticResource SecondaryText}" FontSize="11" />
+    </Grid>
+</Window>

@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "dotaPatch": "CURRENT_PATCH",
+  "generatedAt": "2026-01-01T00:00:00+07:00",
+  "generationPrompt": "Use COMBO JSON / IMPORT-EXPORT in the app to copy the current-patch generation prompt.",
+  "combos": [
+    {
+      "picks": [
+        { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
+        { "hero": "sniper", "name": "Sniper", "role": "Mid" },
+        { "hero": "vengefulspirit", "name": "Vengeful Spirit", "role": "Support" }
+      ],
+      "specialty": "Fortress / Siege",
+      "specialtyTh": "ตั้งรับ / ตีป้อม",
+      "winCondition": "Wraith King fronts, Venge saves, and Sniper fires from the backline.",
+      "winConditionTh": "Wraith King ยืนหน้า, Venge ช่วยเซฟ และ Sniper ยิงจากแนวหลัง"
+    }
+  ]
+}

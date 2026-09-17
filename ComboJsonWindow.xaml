@@ -1,0 +1,59 @@
+<Window x:Class="DotaComboBoard.ComboJsonWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Combo JSON" Width="820" Height="880" MinWidth="700" MinHeight="650"
+        Background="{StaticResource AppBackground}" Foreground="{StaticResource PrimaryText}"
+        FontFamily="{DynamicResource AppFont}" FontSize="14" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid Margin="18">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="TitleText" Text="MAIN 3-HERO COMBOS / JSON" FontSize="24" FontWeight="Bold" />
+                <TextBlock x:Name="SubtitleText" Text="Main-board Carry + Mid + Support rows only" Foreground="{StaticResource SecondaryText}" />
+                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                    <Border Style="{StaticResource VersionTagStyle}"><TextBlock x:Name="AppVersionText" Style="{StaticResource VersionTagTextStyle}" /></Border>
+                    <Border Margin="6,0,0,0" Style="{StaticResource VersionTagStyle}"><TextBlock x:Name="PatchText" Style="{StaticResource VersionTagTextStyle}" Foreground="#F4C46A" /></Border>
+                </StackPanel>
+            </StackPanel>
+            <Button x:Name="CloseButton" Grid.Column="1" Content="CLOSE" VerticalAlignment="Top" Click="CloseButton_Click" />
+        </Grid>
+
+        <WrapPanel Grid.Row="2">
+            <Button x:Name="ImportButton" Margin="0,0,7,7" Content="IMPORT JSON" Background="{StaticResource AccentBrush}" Click="ImportButton_Click" />
+            <Button x:Name="ExportButton" Margin="0,0,7,7" Content="EXPORT CURRENT COMBOS" Click="ExportButton_Click" />
+            <Button x:Name="CopyPromptButton" Margin="0,0,7,7" Content="COPY PATCH PROMPT" Click="CopyPromptButton_Click" />
+            <Button x:Name="SavePromptButton" Margin="0,0,7,7" Content="SAVE PROMPT" Click="SavePromptButton_Click" />
+            <Button x:Name="SaveTemplateButton" Margin="0,0,7,7" Content="SAVE JSON TEMPLATE" Click="SaveTemplateButton_Click" />
+        </WrapPanel>
+
+        <TabControl Grid.Row="4" Background="{StaticResource PanelBackground}">
+            <TabItem x:Name="PromptTab" Header="PATCH PROMPT">
+                <Grid Margin="10">
+                    <TextBox x:Name="PromptBox" Padding="12" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                             Background="#11161C" Foreground="{StaticResource PrimaryText}" BorderBrush="{StaticResource BorderBrush}" />
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="FormatTab" Header="JSON FORMAT">
+                <Grid Margin="10">
+                    <TextBox x:Name="FormatBox" Padding="12" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             FontFamily="Consolas" FontSize="12" Background="#11161C" Foreground="{StaticResource PrimaryText}" BorderBrush="{StaticResource BorderBrush}" />
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="GuideTab" Header="IMPORT RULES">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <TextBlock x:Name="GuideHeaderText" Text="SUPPORTED JSON" Foreground="{StaticResource AccentBrush}" FontSize="18" FontWeight="Bold" />
+                        <TextBlock x:Name="GuideText" Margin="0,8,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="5" Margin="0,10,0,0" Background="#161C23" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="9">
+            <TextBlock x:Name="StatusText" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+        </Border>
+    </Grid>
+</Window>

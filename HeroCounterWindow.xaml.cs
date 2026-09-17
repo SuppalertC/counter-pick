@@ -1,0 +1,223 @@
+using System.Windows;
+using System.Windows.Controls;
+using DotaComboBoard.Models;
+using DotaComboBoard.Services;
+
+namespace DotaComboBoard;
+
+public partial class HeroCounterWindow : Window
+{
+    private readonly HeroMetaService _metaService = new();
+    private readonly TeamCounterService _teamCounterService;
+    private readonly bool _isThai;
+    private readonly List<HeroDirectoryEntry> _selectedEnemies = [];
+    private IReadOnlyList<HeroDirectoryEntry> _heroes = [];
+
+    public HeroCounterWindow(bool isThai, GeminiConfig config)
+    {
+        InitializeComponent();
+        _isThai = isThai;
+        _teamCounterService = new TeamCounterService(_metaService, config);
+        ApplyLanguage();
+        UpdateEnemySelection();
+        Loaded += async (_, _) => await LoadHeroesAsync();
+    }
+
+    private async Task LoadHeroesAsync()
+    {
+        try
+        {
+            _heroes = await _metaService.GetCatalogAsync();
+            ApplyFilter();
+            FooterText.Text = _isThai
+                ? $"ฮีโร่ {_heroes.Count} ตัว • ข้อมูล matchup จาก OpenDota • cache 6 ชั่วโมง"
+                : $"{_heroes.Count} heroes • OpenDota matchup data • 6-hour cache";
+        }
+        catch (Exception exception)
+        {
+            EmptyResultText.Text = exception.Message;
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        var query = SearchBox.Text.Trim();
+        var filtered = _heroes.Where(hero => string.IsNullOrWhiteSpace(query)
+            || hero.Name.Contains(query, StringComparison.OrdinalIgnoreCase)
+            || hero.Key.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+        StrengthItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "str");
+        AgilityItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "agi");
+        IntelligenceItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "int");
+        UniversalItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "all");
+        var selectedIds = _selectedEnemies.Select(hero => hero.Id).ToHashSet();
+        var teamFiltered = filtered.Where(hero => !selectedIds.Contains(hero.Id)).ToList();
+        TeamStrengthItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "str");
+        TeamAgilityItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "agi");
+        TeamIntelligenceItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "int");
+        TeamUniversalItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "all");
+    }
+
+    private void TeamHeroButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: HeroDirectoryEntry hero }
+            || _selectedEnemies.Count >= 5
+            || _selectedEnemies.Any(selected => selected.Id == hero.Id))
+        {
+            return;
+        }
+
+        _selectedEnemies.Add(hero);
+        ResetTeamResult();
+        UpdateEnemySelection();
+        ApplyFilter();
+    }
+
+    private void RemoveEnemyButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: HeroDirectoryEntry hero })
+        {
+            return;
+        }
+
+        _selectedEnemies.RemoveAll(selected => selected.Id == hero.Id);
+        ResetTeamResult();
+        UpdateEnemySelection();
+        ApplyFilter();
+    }
+
+    private void ClearTeamButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        _selectedEnemies.Clear();
+        ResetTeamResult();
+        UpdateEnemySelection();
+        ApplyFilter();
+    }
+
+    private async void AnalyzeTeamButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        if (_selectedEnemies.Count != 5)
+        {
+            return;
+        }
+
+        AnalyzeTeamButton.IsEnabled = false;
+        ClearTeamButton.IsEnabled = false;
+        TeamEmptyResultText.Visibility = Visibility.Collapsed;
+        TeamResultScroller.Visibility = Visibility.Collapsed;
+        TeamLoadingPanel.Visibility = Visibility.Visible;
+        try
+        {
+            var result = await _teamCounterService.AnalyzeAsync(_selectedEnemies, _isThai);
+            AiSummaryHeaderText.Text = result.UsedAi
+                ? _isThai ? "GEMINI FAST ANALYSIS" : "GEMINI FAST ANALYSIS"
+                : _isThai ? "วิเคราะห์คะแนนแบบเร็ว" : "FAST SCORE ANALYSIS";
+            AiSummaryText.Text = result.AiSummary;
+            RecommendedHeroItems.ItemsSource = result.RecommendedHeroes;
+            RecommendedTeamItems.ItemsSource = result.Teams;
+            TeamLoadingPanel.Visibility = Visibility.Collapsed;
+            TeamResultScroller.Visibility = Visibility.Visible;
+            TeamResultScroller.ScrollToTop();
+        }
+        catch (Exception exception)
+        {
+            TeamLoadingPanel.Visibility = Visibility.Collapsed;
+            TeamEmptyResultText.Text = _isThai ? $"วิเคราะห์ 5v5 ไม่สำเร็จ: {exception.Message}" : $"5v5 analysis failed: {exception.Message}";
+            TeamEmptyResultText.Visibility = Visibility.Visible;
+        }
+        finally
+        {
+            AnalyzeTeamButton.IsEnabled = _selectedEnemies.Count == 5;
+            ClearTeamButton.IsEnabled = true;
+        }
+    }
+
+    private void UpdateEnemySelection()
+    {
+        SelectedEnemyItems.ItemsSource = null;
+        SelectedEnemyItems.ItemsSource = _selectedEnemies.ToList();
+        SelectedCountText.Text = _isThai
+            ? $"เลือกแล้ว {_selectedEnemies.Count}/5 • กดฮีโร่ที่เลือกเพื่อลบ"
+            : $"Selected {_selectedEnemies.Count}/5 • Click a selected hero to remove";
+        AnalyzeTeamButton.IsEnabled = _selectedEnemies.Count == 5;
+    }
+
+    private void ResetTeamResult()
+    {
+        TeamLoadingPanel.Visibility = Visibility.Collapsed;
+        TeamResultScroller.Visibility = Visibility.Collapsed;
+        TeamEmptyResultText.Text = _isThai
+            ? "เลือกฮีโร่ศัตรู 5 ตัว แล้วกดวิเคราะห์ทั้งทีม"
+            : "Select five enemy heroes, then analyze the full matchup.";
+        TeamEmptyResultText.Visibility = Visibility.Visible;
+    }
+
+    private async void HeroButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        if (sender is not System.Windows.Controls.Button { Tag: HeroDirectoryEntry hero })
+        {
+            return;
+        }
+
+        EmptyResultText.Visibility = Visibility.Collapsed;
+        ResultPanel.Visibility = Visibility.Collapsed;
+        LoadingPanel.Visibility = Visibility.Visible;
+        try
+        {
+            var result = await _metaService.GetMatchupsAsync(hero);
+            foreach (var matchup in result.Counters.Concat(result.Advantages))
+            {
+                matchup.Summary = _isThai
+                    ? $"ชนะ {matchup.SelectedHeroWinRate:0.0}% • {matchup.GamesPlayed:N0} เกม"
+                    : $"Win {matchup.SelectedHeroWinRate:0.0}% • {matchup.GamesPlayed:N0} games";
+            }
+
+            SelectedHeroIcon.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(hero.IconPath));
+            SelectedHeroText.Text = hero.Name;
+            SelectedHeroMetaText.Text = _isThai
+                ? $"Pick {hero.PickRate:0.00}% • Win {hero.WinRate:0.0}%"
+                : $"Pick {hero.PickRate:0.00}% • Win {hero.WinRate:0.0}%";
+            CounterItems.ItemsSource = result.Counters;
+            AdvantageItems.ItemsSource = result.Advantages;
+            LoadingPanel.Visibility = Visibility.Collapsed;
+            ResultPanel.Visibility = Visibility.Visible;
+        }
+        catch (Exception exception)
+        {
+            LoadingPanel.Visibility = Visibility.Collapsed;
+            EmptyResultText.Text = exception.Message;
+            EmptyResultText.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void ApplyLanguage()
+    {
+        Title = _isThai ? "ค้นหาฮีโร่แก้ทาง" : "Hero Counter Finder";
+        TitleText.Text = _isThai ? "ค้นหาฮีโร่แก้ทาง" : "HERO COUNTER FINDER";
+        SubtitleText.Text = _isThai ? "ค้นหาแบบตัวต่อตัว หรือเลือกศัตรู 5 ตัวเพื่อจัดทีมสวน" : "Search one hero or build a full 5v5 counter draft.";
+        CloseButton.Content = _isThai ? "ปิด" : "CLOSE";
+        SearchBox.ToolTip = _isThai ? "พิมพ์ชื่อฮีโร่" : "Type a hero name";
+        SingleModeTab.Header = _isThai ? "แก้ทาง 1 ตัว" : "1 HERO";
+        TeamModeTab.Header = "5v5 VERSUS";
+        EmptyResultText.Text = _isThai ? "เลือกฮีโร่เพื่อดูตัวแก้ทางและตัวที่เราได้เปรียบ" : "Select a hero to view counters and favorable matchups.";
+        LoadingText.Text = _isThai ? "กำลังโหลด matchup..." : "LOADING MATCHUPS...";
+        CounterHeaderText.Text = _isThai ? "เสียเปรียบเมื่อเจอ" : "DISADVANTAGED VS";
+        AdvantageHeaderText.Text = _isThai ? "ได้เปรียบเมื่อเจอ" : "ADVANTAGED VS";
+        EnemyTeamHeaderText.Text = _isThai ? "ทีมศัตรู — เลือกให้ครบ 5 ตัว" : "ENEMY TEAM — SELECT 5";
+        ClearTeamButton.Content = _isThai ? "ล้าง" : "CLEAR";
+        AnalyzeTeamButton.Content = _isThai ? "วิเคราะห์ 5v5" : "ANALYZE 5v5";
+        TeamLoadingText.Text = _isThai ? "กำลังรวม Win Rate + Team Counter + Gemini..." : "SCORING WIN RATE + TEAM COUNTER + GEMINI...";
+        RecommendedHeroesHeaderText.Text = _isThai ? "ฮีโร่ที่ควรหยิบสวนมากที่สุด" : "BEST COUNTER PICKS";
+        RecommendedTeamsHeaderText.Text = _isThai ? "3 ทีมที่เหมาะปะทะทั้งชุด" : "TOP 3 COUNTER TEAMS";
+        ResetTeamResult();
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs eventArgs)
+    {
+        if (IsLoaded)
+        {
+            ApplyFilter();
+        }
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs eventArgs) => Close();
+}

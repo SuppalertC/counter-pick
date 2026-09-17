@@ -1,0 +1,8 @@
+bin/
+obj/
+*.user
+*.suo
+.env
+*.env
+workflow-run-*.json
+assets/map/neutral-map-7.41.jpg

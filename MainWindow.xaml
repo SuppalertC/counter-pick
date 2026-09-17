@@ -1,0 +1,118 @@
+<Window x:Class="DotaComboBoard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dota 2 Team Board"
+        Width="820"
+        Height="460"
+        MinWidth="420"
+        MinHeight="240"
+        Background="{StaticResource AppBackground}"
+        Foreground="{StaticResource PrimaryText}"
+        FontFamily="{DynamicResource AppFont}"
+        FontSize="15"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="BoardTitleText"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+                <TextBlock x:Name="SubtitleText"
+                           Margin="0,3,0,0"
+                           Foreground="{StaticResource SecondaryText}"
+                           FontSize="12" />
+                <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <Border Style="{StaticResource VersionTagStyle}">
+                        <TextBlock x:Name="AppVersionTagText" Style="{StaticResource VersionTagTextStyle}" />
+                    </Border>
+                    <Border Margin="6,0,0,0" Style="{StaticResource VersionTagStyle}">
+                        <TextBlock x:Name="DotaPatchTagText" Style="{StaticResource VersionTagTextStyle}" Foreground="#F4C46A" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="AutoUpdateButton" Margin="0,0,6,0" Click="AutoUpdateButton_Click" />
+                <Button x:Name="MenuButton" Content="MENU ▾" Margin="0,0,6,0" Click="MenuButton_Click" />
+                <Button x:Name="LanguageButton" Content="LANG: TH" Margin="0,0,6,0" Click="LanguageButton_Click" />
+                <Button x:Name="ReloadButton" Content="↻" Margin="0,0,6,0" Click="ReloadButton_Click" />
+                <Button x:Name="FullButton" Content="□" Margin="0,0,6,0" ToolTip="Full screen / Restore" Click="FullButton_Click" />
+                <Button x:Name="MinimizeButton" Content="—" Margin="0,0,6,0" Click="MinimizeButton_Click" />
+                <Button x:Name="HideButton" Content="×" Click="HideButton_Click" />
+            </StackPanel>
+        </Grid>
+
+        <Popup x:Name="NavigationPopup"
+               PlacementTarget="{Binding ElementName=MenuButton}"
+               Placement="Bottom"
+               HorizontalOffset="-140"
+               VerticalOffset="6"
+               AllowsTransparency="True"
+               PopupAnimation="Fade"
+               StaysOpen="False">
+            <Border Width="292"
+                    Background="#202832"
+                    BorderBrush="#465362"
+                    BorderThickness="1"
+                    CornerRadius="9"
+                    Padding="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="5" Opacity="0.48" Color="#000000" />
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock x:Name="ToolsMenuTitleText" Text="TEAM TOOLS" Margin="5,2,5,8" Foreground="{StaticResource SecondaryText}" FontSize="11" FontWeight="Bold" />
+                    <Button x:Name="MetaCounterMenuButton" Margin="0,0,0,5" Padding="11,9" HorizontalContentAlignment="Left" Click="MetaCounterMenuItem_Click">
+                        <StackPanel>
+                            <TextBlock x:Name="MetaCounterMenuTitleText" Text="META COUNTER" FontWeight="Bold" />
+                            <TextBlock x:Name="MetaCounterMenuDetailText" Text="Choose a plan against current popular heroes" Foreground="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="HeroCounterMenuButton" Margin="0,0,0,9" Padding="11,9" HorizontalContentAlignment="Left" Click="HeroCounterMenuItem_Click">
+                        <StackPanel>
+                            <TextBlock x:Name="HeroCounterMenuTitleText" Text="HERO COUNTER FINDER" FontWeight="Bold" />
+                            <TextBlock x:Name="HeroCounterMenuDetailText" Text="Find favorable and difficult matchups fast" Foreground="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ComboJsonMenuButton" Margin="0,0,0,9" Padding="11,9" HorizontalContentAlignment="Left" Click="ComboJsonMenuItem_Click">
+                        <StackPanel>
+                            <TextBlock x:Name="ComboJsonMenuTitleText" Text="MAIN 3-HERO COMBOS / JSON" FontWeight="Bold" />
+                            <TextBlock x:Name="ComboJsonMenuDetailText" Text="Import or export Carry + Mid + Support rows" Foreground="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+                    <Border Height="1" Background="{StaticResource BorderBrush}" Margin="2,0,2,9" />
+                    <Button x:Name="RefreshDataMenuButton" Content="↻  REFRESH META DATA NOW" Margin="0,0,0,5" HorizontalContentAlignment="Left" Click="RefreshDataMenuItem_Click" />
+                    <Button x:Name="SettingsMenuButton" Content="⚙  SETTINGS / GEMINI API" Margin="0,0,0,5" HorizontalContentAlignment="Left" Click="SettingsMenuItem_Click" />
+                    <Button x:Name="StartupMenuButton" Content="START WITH WINDOWS: OFF" HorizontalContentAlignment="Left" Click="StartupMenuItem_Click" />
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Border Grid.Row="2"
+                Background="{StaticResource PanelBackground}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="6"
+                ClipToBounds="True">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="BoardPanel" />
+            </ScrollViewer>
+        </Border>
+
+        <TextBlock x:Name="StatusText"
+                   Grid.Row="3"
+                   Margin="2,8,2,0"
+                   Foreground="{StaticResource SecondaryText}"
+                   FontSize="11" />
+    </Grid>
+</Window>

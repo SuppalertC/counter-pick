@@ -1,0 +1,38 @@
+<Window x:Class="DotaComboBoard.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Width="560" Height="410" MinWidth="500" MinHeight="380"
+        Background="{StaticResource AppBackground}" Foreground="{StaticResource PrimaryText}"
+        FontFamily="{DynamicResource AppFont}" FontSize="14" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid Margin="20">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="16" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="TitleText" Text="SETTINGS" FontSize="24" FontWeight="Bold" />
+                <TextBlock x:Name="SubtitleText" Text="Gemini API for fast 5v5 counter analysis" Foreground="{StaticResource SecondaryText}" />
+            </StackPanel>
+            <Button x:Name="CloseButton" Grid.Column="1" Content="CLOSE" Click="CloseButton_Click" />
+        </Grid>
+
+        <Border Grid.Row="2" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="9" Padding="16">
+            <StackPanel>
+                <TextBlock x:Name="ApiHeaderText" Text="GEMINI API KEY" Foreground="{StaticResource AccentBrush}" FontWeight="Bold" />
+                <TextBlock x:Name="ApiHelpText" Margin="0,5,0,10" Text="Create a free key in Google AI Studio, then paste it here." Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                <PasswordBox x:Name="ApiKeyBox" Padding="10,8" Background="#11161C" Foreground="{StaticResource PrimaryText}" BorderBrush="{StaticResource BorderBrush}" PasswordChar="●" />
+                <TextBlock x:Name="StorageNoticeText" Margin="0,7,0,0" Text="Saved only on this Windows account in LocalAppData." Foreground="{StaticResource SecondaryText}" FontSize="11" />
+                <WrapPanel Margin="0,14,0,0">
+                    <Button x:Name="OpenAiStudioButton" Margin="0,0,8,0" Content="OPEN GOOGLE AI STUDIO" Click="OpenAiStudioButton_Click" />
+                    <Button x:Name="TestKeyButton" Margin="0,0,8,0" Content="TEST KEY" Click="TestKeyButton_Click" />
+                    <Button x:Name="ClearKeyButton" Content="CLEAR" Click="ClearKeyButton_Click" />
+                </WrapPanel>
+                <TextBlock x:Name="StatusText" Margin="0,14,0,0" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="3" Margin="0,14,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Margin="0,0,8,0" Content="CANCEL" Click="CloseButton_Click" />
+            <Button x:Name="SaveButton" Content="SAVE SETTINGS" Background="{StaticResource AccentBrush}" Click="SaveButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

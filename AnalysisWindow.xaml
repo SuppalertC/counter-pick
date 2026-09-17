@@ -1,0 +1,327 @@
+<Window x:Class="DotaComboBoard.AnalysisWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:DotaComboBoard.Controls"
+        Title="Lineup Analysis" Width="840" Height="900" MinWidth="720" MinHeight="720" MaxHeight="1200"
+        Background="{StaticResource AppBackground}" Foreground="{StaticResource PrimaryText}"
+        FontFamily="{DynamicResource AppFont}" FontSize="14" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources>
+        <SolidColorBrush x:Key="AnalysisCard" Color="#161C23" />
+        <SolidColorBrush x:Key="AnalysisCardRaised" Color="#1B232C" />
+        <SolidColorBrush x:Key="AnalysisCardInset" Color="#11161C" />
+        <SolidColorBrush x:Key="AnalysisSuccess" Color="#5FD09A" />
+        <SolidColorBrush x:Key="AnalysisWarning" Color="#F4C46A" />
+        <SolidColorBrush x:Key="AnalysisDanger" Color="#EF6A5B" />
+        <SolidColorBrush x:Key="RadiantRoute" Color="#4ECDC4" />
+        <SolidColorBrush x:Key="DireRoute" Color="#F4A64C" />
+
+        <Style x:Key="AnalysisCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource AnalysisCard}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Padding" Value="13" />
+        </Style>
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="2,20,0,8" />
+            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style x:Key="MicroLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground" Value="{StaticResource SecondaryText}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabSurface" Margin="3,4,3,6" Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}" CornerRadius="7">
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabSurface" Property="Background" Value="{StaticResource AnalysisCardRaised}" />
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryText}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabSurface" Property="Background" Value="{StaticResource AccentBrush}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="BuildOptionTemplate">
+            <Border Margin="0,7,0,0" Background="{StaticResource AnalysisCardRaised}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="7" Padding="11">
+                <StackPanel>
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                    <TextBlock Margin="0,3,0,8" Text="{Binding Goal}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Timings}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="250" MinHeight="66" Margin="0,0,7,7" Background="{StaticResource AnalysisCardInset}" CornerRadius="6" Padding="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="40" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <Image Width="36" Height="27" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock Text="{Binding Timing}" Foreground="{StaticResource AccentBrush}" FontSize="10" />
+                                            <TextBlock Text="{Binding ItemName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Reason}" FontSize="10" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl Margin="0,2,0,0" ItemsSource="{Binding FinalItems}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate><DataTemplate><Border Margin="0,0,7,0" ToolTip="{Binding ItemName}"><Image Width="46" Height="34" Source="{Binding IconPath}" Stretch="UniformToFill" /></Border></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="RolePlanTemplate">
+            <ScrollViewer Padding="16,14,9,18" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border Style="{StaticResource AnalysisCardStyle}">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="64" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <Border Width="54" Height="54" CornerRadius="8" ClipToBounds="True"><Image Source="{Binding IconPath}" Stretch="UniformToFill" /></Border>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Hero}" FontSize="23" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Position, StringFormat='POSITION {0} • HERO EXECUTION PLAN'}" Foreground="{StaticResource AccentBrush}" FontSize="11" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Margin="0,13,0,0" Text="LANE POSITION / ตำแหน่งยืนเลน" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" />
+                            <TextBlock Margin="0,5,0,0" Text="{Binding LanePositioning}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="TIMELINE / แผนตามเวลา" />
+                    <ItemsControl ItemsSource="{Binding Timeline}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="11">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="105" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Minute}" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" VerticalAlignment="Top" />
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Action}" TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,3,0,0" Text="{Binding Objective, StringFormat='→ {0}'}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="LIVE MAP FARM GUIDE / เส้นทางฟาร์มบนแผนที่" />
+                    <Border Style="{StaticResource AnalysisCardStyle}" Padding="12">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="CURRENT DOTA 2 MAP + NEUTRAL CAMP SPAWNS" FontWeight="Bold" />
+                                    <TextBlock Margin="0,2,0,0" Text="พิกัดจุดเกิดดึงจาก map entities ของเกม • เลข 1–5 คือเส้นทางแนะนำ" Style="{StaticResource MicroLabelStyle}" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{StaticResource AnalysisCardInset}" CornerRadius="5" Padding="8,4">
+                                    <TextBlock Text="RADIANT ━  DIRE ┅" Style="{StaticResource MicroLabelStyle}" />
+                                </Border>
+                            </Grid>
+                            <controls:FarmRouteMap Height="700"
+                                                   AutomationProperties.Name="Dota 2 neutral camp farm route map"
+                                                   RolePlan="{Binding}" />
+                            <Grid Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <Border Background="#172729" CornerRadius="7" Padding="10">
+                                    <StackPanel><TextBlock Text="RADIANT ROUTE" Foreground="{StaticResource RadiantRoute}" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding RadiantMapRoute}" TextWrapping="Wrap" /></StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Background="#282116" CornerRadius="7" Padding="10">
+                                    <StackPanel><TextBlock Text="DIRE ROUTE" Foreground="{StaticResource DireRoute}" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding DireMapRoute}" TextWrapping="Wrap" /></StackPanel>
+                                </Border>
+                            </Grid>
+                            <Border Margin="0,10,0,0" Background="{StaticResource AnalysisCardInset}" CornerRadius="7" Padding="10">
+                                <StackPanel><TextBlock Text="SAFE FARM RULE / กฎฟาร์มปลอดภัย" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding MapFarmRule}" TextWrapping="Wrap" /></StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="MAP DECISIONS / การตัดสินใจบนแมพ" />
+                    <UniformGrid Columns="2">
+                        <Border Margin="0,0,5,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock Text="MAP MOVEMENT / เดินแมพ" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding MapMovement}" TextWrapping="Wrap" /></StackPanel></Border>
+                        <Border Margin="5,0,0,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock Text="SAFE FARM / ฟาร์มปลอดภัย" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding SafeFarm}" TextWrapping="Wrap" /></StackPanel></Border>
+                        <Border Margin="0,5,5,5" Background="#17261F" BorderBrush="#28523C" BorderThickness="1" CornerRadius="9" Padding="13"><StackPanel><TextBlock Text="AHEAD / เกมนำ" Foreground="{StaticResource AnalysisSuccess}" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding AheadPlan}" TextWrapping="Wrap" /></StackPanel></Border>
+                        <Border Margin="5,5,0,5" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="9" Padding="13"><StackPanel><TextBlock Text="BEHIND / เกมตาม" Foreground="{StaticResource AnalysisDanger}" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding BehindPlan}" TextWrapping="Wrap" /></StackPanel></Border>
+                        <Border Margin="0,5,5,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock Text="TRIANGLE TIMING / เข้าสามเหลี่ยม" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding TriangleTiming}" TextWrapping="Wrap" /></StackPanel></Border>
+                        <Border Margin="5,5,0,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock Text="LEVEL TIMING / เร่งเลเวล" FontWeight="Bold" /><TextBlock Margin="0,4,0,0" Text="{Binding LevelTiming}" TextWrapping="Wrap" /></StackPanel></Border>
+                    </UniformGrid>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="CREEP + CAMP ROUTE / เล่นครีปและแคมป์ไหน" />
+                    <ItemsControl ItemsSource="{Binding FarmRoute}">
+                        <ItemsControl.ItemTemplate><DataTemplate><Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="11"><TextBlock Text="{Binding}" TextWrapping="Wrap" /></Border></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Foreground="{StaticResource AnalysisWarning}" Text="GO / ABORT CHECK / เช็กก่อนขยับ" />
+                    <ItemsControl ItemsSource="{Binding DecisionChecks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="11">
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="26" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><TextBlock Text="✓" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" /></Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="ITEM BUILDS / แนวทางออกไอเทม" />
+                    <Border Style="{StaticResource AnalysisCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Build.KeyItemDisplay}" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" />
+                            <TextBlock Margin="0,5,0,4" Text="{Binding Build.CriticalRuleDisplay}" Foreground="{StaticResource AnalysisWarning}" TextWrapping="Wrap" />
+                            <ItemsControl ItemsSource="{Binding Build.Options}" ItemTemplate="{StaticResource BuildOptionTemplate}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="HeaderTitleText" Text="LINEUP INTELLIGENCE" FontSize="24" FontWeight="Bold" />
+                <ItemsControl x:Name="LineupItems" Margin="0,9,0,0">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,8,6" Style="{StaticResource AnalysisCardStyle}" Padding="7,5">
+                                <StackPanel Orientation="Horizontal"><Image Width="30" Height="30" Source="{Binding IconPath}" Stretch="UniformToFill" /><StackPanel Margin="8,0,0,0"><TextBlock Text="{Binding Name}" FontWeight="SemiBold" /><TextBlock Text="{Binding RoleDisplay}" Style="{StaticResource MicroLabelStyle}" /></StackPanel></StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock x:Name="ModelText" Margin="0,1,0,0" Style="{StaticResource MicroLabelStyle}" />
+                <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <Border Style="{StaticResource VersionTagStyle}">
+                        <TextBlock x:Name="AnalysisAppVersionTagText" Style="{StaticResource VersionTagTextStyle}" />
+                    </Border>
+                    <Border Margin="6,0,0,0" Style="{StaticResource VersionTagStyle}">
+                        <TextBlock x:Name="AnalysisPatchTagText" Style="{StaticResource VersionTagTextStyle}" Foreground="{StaticResource AnalysisWarning}" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <Button x:Name="CloseButton" Grid.Column="1" Content="CLOSE" VerticalAlignment="Top" Click="CloseButton_Click" />
+        </Grid>
+
+        <Border Grid.Row="2" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" ClipToBounds="True">
+            <Grid>
+                <StackPanel x:Name="LoadingPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="LoadingTitleText" Text="READING CURRENT PATCH + BUILD DATA..." HorizontalAlignment="Center" Foreground="{StaticResource AccentBrush}" FontSize="17" />
+                    <ProgressBar Width="280" Height="4" Margin="0,14,0,0" IsIndeterminate="True" />
+                    <TextBlock x:Name="LoadingDetailText" Margin="0,10,0,0" Text="Valve patch notes • OpenDota items • Gemini analysis" Foreground="{StaticResource SecondaryText}" />
+                </StackPanel>
+                <StackPanel x:Name="ErrorPanel" Margin="32" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                    <TextBlock x:Name="ErrorTitleText" Text="ANALYSIS FAILED" HorizontalAlignment="Center" Foreground="{StaticResource AccentBrush}" FontSize="20" />
+                    <TextBlock x:Name="ErrorText" Margin="0,12,0,16" MaxWidth="620" TextAlignment="Center" TextWrapping="Wrap" />
+                    <Button x:Name="RetryButton" Content="TRY AGAIN" HorizontalAlignment="Center" Click="RetryButton_Click" />
+                </StackPanel>
+
+                <TabControl x:Name="AnalysisTabs" Visibility="Collapsed">
+                    <TabItem x:Name="OverviewTab" Header="OVERVIEW">
+                        <ScrollViewer Padding="16,14,9,18" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Border Style="{StaticResource AnalysisCardStyle}">
+                                    <StackPanel>
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><TextBlock x:Name="OverviewHeaderText" Text="OVERVIEW" Foreground="{StaticResource AccentBrush}" FontWeight="Bold" /><Border Grid.Column="1" Background="{StaticResource AnalysisCardRaised}" CornerRadius="5" Padding="9,3"><TextBlock x:Name="PatchText" FontSize="11" /></Border></Grid>
+                                        <TextBlock x:Name="OverviewText" Margin="0,9,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock x:Name="HowToPlayHeaderText" Style="{StaticResource SectionTitleStyle}" Text="HOW TO PLAY" />
+                                <UniformGrid Columns="2">
+                                    <Border Margin="0,0,5,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LanePhaseHeaderText" Text="LANE PHASE" FontWeight="Bold" /><TextBlock x:Name="LanePhaseText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="5,0,0,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="TeamFightHeaderText" Text="TEAM FIGHT" FontWeight="Bold" /><TextBlock x:Name="TeamFightText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="0,5,5,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="PickOffHeaderText" Text="PICK OFF" FontWeight="Bold" /><TextBlock x:Name="PickOffText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="5,5,0,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LosingGameHeaderText" Text="LOSING GAME" FontWeight="Bold" /><TextBlock x:Name="LosingGameText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                </UniformGrid>
+
+                                <TextBlock x:Name="CountersHeaderText" Style="{StaticResource SectionTitleStyle}" Text="COUNTERS" />
+                                <ItemsControl x:Name="CounterItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="10">
+                                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="46" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="38" Height="38" Source="{Binding IconPath}" Stretch="UniformToFill" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" /><StackPanel Grid.Column="2" VerticalAlignment="Center"><TextBlock Text="{Binding Threat}" FontSize="12" TextWrapping="Wrap" /><TextBlock Margin="0,2,0,0" Text="{Binding Response, StringFormat='→ {0}'}" FontSize="11" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel></Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock x:Name="ReplacementHeaderText" Style="{StaticResource SectionTitleStyle}" Text="REPLACEMENTS" />
+                                <ItemsControl x:Name="ReplacementItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,8" Style="{StaticResource AnalysisCardStyle}">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal"><Image Width="36" Height="36" Source="{Binding OriginalHeroIconPath}" /><TextBlock Margin="9,0,0,0" Text="{Binding OriginalHero}" VerticalAlignment="Center" FontWeight="Bold" /></StackPanel>
+                                                    <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Alternatives}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border Margin="0,0,0,5" Background="{StaticResource AnalysisCardRaised}" CornerRadius="6" Padding="8">
+                                                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="42" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="34" Height="34" Source="{Binding IconPath}" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="SemiBold" /><TextBlock Grid.Column="2" Text="{Binding Reason}" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></Grid>
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock x:Name="CriticalHeaderText" Style="{StaticResource SectionTitleStyle}" Foreground="{StaticResource AnalysisWarning}" Text="CRITICAL — DO NOT MISS" />
+                                <ItemsControl x:Name="CriticalItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,7" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="9" Padding="11">
+                                                <StackPanel><TextBlock Text="{Binding Owner}" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Margin="0,3,0,0" Text="{Binding Rule}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding FailureImpactDisplay}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem x:Name="Pos1Tab" Header="POS 1 — CARRY"><ContentControl x:Name="Pos1Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
+                    <TabItem x:Name="Pos2Tab" Header="POS 2 — MID"><ContentControl x:Name="Pos2Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
+                    <TabItem x:Name="Pos5Tab" Header="POS 5 — SUPPORT"><ContentControl x:Name="Pos5Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
+                </TabControl>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="2,10,2,0">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <TextBlock x:Name="DisclaimerText" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" FontSize="11" TextWrapping="Wrap" />
+            <Button x:Name="ReanalyzeButton" Grid.Column="1" Content="REFRESH PATCH + ANALYZE" Visibility="Collapsed" Click="ReanalyzeButton_Click" />
+        </Grid>
+    </Grid>
+</Window>
