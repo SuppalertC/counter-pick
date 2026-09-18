@@ -181,12 +181,17 @@
         </Grid>
 
         <Border Grid.Row="1" Margin="0,14,0,12" Background="#171E26" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6">
-            <Grid>
-                <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                <TextBlock Text="⌕" FontSize="20" Foreground="{StaticResource SecondaryText}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <TextBox x:Name="SearchBox" Grid.Column="1" Padding="4,8" Background="Transparent" Foreground="{StaticResource PrimaryText}"
-                         BorderThickness="0" CaretBrush="{StaticResource PrimaryText}" TextChanged="SearchBox_TextChanged" />
-            </Grid>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="34" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="⌕" FontSize="20" Foreground="{StaticResource SecondaryText}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBox x:Name="SearchBox" Grid.Column="1" Padding="4,8" Background="Transparent" Foreground="{StaticResource PrimaryText}"
+                             BorderThickness="0" CaretBrush="{StaticResource PrimaryText}" TextChanged="SearchBox_TextChanged" KeyDown="SearchBox_KeyDown" />
+                    <Button x:Name="ClearSearchButton" Grid.Column="2" Margin="4" Padding="10,5" Content="×" ToolTip="Clear search" Click="ClearSearchButton_Click" />
+                    <Button x:Name="SearchButton" Grid.Column="3" Margin="0,4,4,4" Padding="14,5" Content="SEARCH" Background="{StaticResource AccentBrush}" Click="SearchButton_Click" />
+                </Grid>
+                <TextBlock x:Name="SearchStatusText" Margin="35,0,8,6" Foreground="{StaticResource SecondaryText}" FontSize="10" />
+            </StackPanel>
         </Border>
 
         <TabControl x:Name="ModeTabs" Grid.Row="2" Style="{StaticResource CounterTabControlStyle}">
@@ -212,6 +217,7 @@
                                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
                                         <TextBlock x:Name="SelectedHeroText" FontSize="19" FontWeight="Bold" />
                                         <TextBlock x:Name="SelectedHeroMetaText" Foreground="{StaticResource SecondaryText}" />
+                                        <TextBlock x:Name="MatchupSourceText" Foreground="#F4C46A" FontSize="10" Visibility="Collapsed" />
                                     </StackPanel>
                                 </StackPanel>
                                 <ScrollViewer Grid.Row="2" Style="{StaticResource CounterScrollerStyle}">

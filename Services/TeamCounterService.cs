@@ -7,7 +7,7 @@ namespace DotaComboBoard.Services;
 
 public sealed class TeamCounterService
 {
-    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
+    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(60) };
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -32,27 +32,36 @@ public sealed class TeamCounterService
         var catalog = await _metaService.GetCatalogAsync();
         var matchupTasks = enemies.Select(enemy => _metaService.GetMatchupRatesAsync(enemy)).ToArray();
         var matchupMaps = await Task.WhenAll(matchupTasks);
+        var availableMatchupCount = matchupMaps.Count(map => map.Count > 0);
+        var minimumEvidence = Math.Min(3, availableMatchupCount);
+        var usedMatchupFallback = availableMatchupCount < enemies.Count;
         var enemyIds = enemies.Select(enemy => enemy.Id).ToHashSet();
 
         var candidates = catalog
             .Where(hero => !enemyIds.Contains(hero.Id))
             .Select(hero => ScoreCandidate(hero, enemies, matchupMaps, isThai))
-            .Where(candidate => candidate.MatchupCount >= 3)
+            .Where(candidate => candidate.MatchupCount >= minimumEvidence)
             .OrderByDescending(candidate => candidate.Recommendation.OverallScore)
             .ToList();
 
         var result = new TeamCounterResult
         {
             RecommendedHeroes = candidates.Take(12).Select(candidate => candidate.Recommendation).ToList(),
-            Teams = BuildTeams(candidates, isThai)
+            Teams = BuildTeams(candidates, isThai),
+            UsedMatchupFallback = usedMatchupFallback
         };
+        var fallbackNotice = usedMatchupFallback
+            ? isThai
+                ? $"OpenDota ตอบไม่ครบ ({availableMatchupCount}/5) จึงใช้ cache + Win Rate สำรอง • "
+                : $"OpenDota returned partial data ({availableMatchupCount}/5); cache + Win Rate fallback used • "
+            : string.Empty;
 
         var apiKey = GeminiApiKeyService.Resolve(_config);
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            result.AiSummary = isThai
+            result.AiSummary = fallbackNotice + (isThai
                 ? "ใช้คะแนน OpenDota แบบเร็วแล้ว • เพิ่ม Gemini API key ใน Settings เพื่อรับบทวิเคราะห์ทีม"
-                : "Fast OpenDota scoring used. Add a Gemini API key in Settings for team analysis.";
+                : "Fast OpenDota scoring used. Add a Gemini API key in Settings for team analysis.");
             return result;
         }
 
@@ -60,13 +69,14 @@ public sealed class TeamCounterService
         {
             var aiResult = await AnalyzeWithGeminiAsync(apiKey, enemies, result, isThai);
             ApplyAiResult(result, aiResult);
+            result.AiSummary = fallbackNotice + result.AiSummary;
             result.UsedAi = true;
         }
         catch (Exception exception)
         {
-            result.AiSummary = isThai
+            result.AiSummary = fallbackNotice + (isThai
                 ? $"คำนวณทีมจาก OpenDota สำเร็จ • Gemini ไม่พร้อม: {exception.Message}"
-                : $"OpenDota team scoring completed. Gemini unavailable: {exception.Message}";
+                : $"OpenDota team scoring completed. Gemini unavailable: {exception.Message}");
         }
 
         return result;
@@ -286,15 +296,15 @@ public sealed class TeamCounterService
             contents = new[] { new { role = "user", parts = new[] { new { text = prompt } } } },
             generationConfig = new
             {
-                temperature = 0.15,
                 maxOutputTokens = 1800,
+                thinkingConfig = new { thinkingLevel = "low" },
                 responseMimeType = "application/json",
                 responseSchema = schema
             }
         };
 
         Exception? lastException = null;
-        foreach (var model in new[] { "gemini-3.5-flash-lite", _config.Model }.Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var model in new[] { _config.Model, "gemini-flash-latest" }.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             try
             {

@@ -121,8 +121,8 @@ public sealed class GeminiAnalysisService
     {
         var payload = JsonSerializer.Serialize(requestBody);
         var models = (preferLite
-                ? new[] { "gemini-3.5-flash-lite", _config.Model }
-                : new[] { _config.Model, "gemini-3.5-flash-lite" })
+                ? new[] { "gemini-flash-latest", _config.Model }
+                : new[] { _config.Model, "gemini-flash-latest" })
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         string? lastError = null;
@@ -222,6 +222,7 @@ public sealed class GeminiAnalysisService
             {
                 responseMimeType = "application/json",
                 responseSchema = CreateResponseSchema(),
+                thinkingConfig = new { thinkingLevel = "low" },
                 maxOutputTokens = 3000
             }
         };
@@ -269,6 +270,7 @@ public sealed class GeminiAnalysisService
             {
                 responseMimeType = "application/json",
                 responseSchema = schema,
+                thinkingConfig = new { thinkingLevel = "low" },
                 maxOutputTokens
             }
         };

@@ -7,7 +7,7 @@ namespace DotaComboBoard.Services;
 
 public sealed class HeroMetaService
 {
-    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
+    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(12) };
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     private static readonly SemaphoreSlim CatalogGate = new(1, 1);
     private static IReadOnlyList<HeroDirectoryEntry>? _catalog;
@@ -82,7 +82,7 @@ public sealed class HeroMetaService
 
         var counters = matchups.OrderBy(matchup => matchup.SelectedHeroWinRate).Take(8).ToList();
         var advantages = matchups.OrderByDescending(matchup => matchup.SelectedHeroWinRate).Take(8).ToList();
-        return new HeroMatchupResult(selectedHero, counters, advantages);
+        return new HeroMatchupResult(selectedHero, counters, advantages, rawMatchups.Count == 0);
     }
 
     public async Task<IReadOnlyDictionary<int, HeroMatchupStat>> GetMatchupRatesAsync(
@@ -102,12 +102,18 @@ public sealed class HeroMetaService
             Directory.CreateDirectory(_cacheDirectory);
             try
             {
-                json = await GetStringWithRetryAsync($"https://api.opendota.com/api/heroes/{selectedHero.Id}/matchups");
+                json = await GetStringWithRetryAsync(
+                    $"https://api.opendota.com/api/heroes/{selectedHero.Id}/matchups",
+                    maxAttempts: 1);
                 await File.WriteAllTextAsync(cachePath, json);
             }
             catch (InvalidOperationException) when (File.Exists(cachePath))
             {
                 json = await File.ReadAllTextAsync(cachePath);
+            }
+            catch (InvalidOperationException)
+            {
+                return new Dictionary<int, HeroMatchupStat>();
             }
         }
 
@@ -159,10 +165,10 @@ public sealed class HeroMetaService
         return heroes;
     }
 
-    private static async Task<string> GetStringWithRetryAsync(string uri)
+    private static async Task<string> GetStringWithRetryAsync(string uri, int maxAttempts = 3)
     {
         Exception? lastException = null;
-        for (var attempt = 0; attempt < 3; attempt++)
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             try
             {
@@ -171,7 +177,7 @@ public sealed class HeroMetaService
             catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
             {
                 lastException = exception;
-                if (attempt < 2)
+                if (attempt < maxAttempts - 1)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2 * (attempt + 1)));
                 }

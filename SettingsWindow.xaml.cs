@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows;
+using DotaComboBoard.Models;
 using DotaComboBoard.Services;
 
 namespace DotaComboBoard;
@@ -9,11 +10,13 @@ public partial class SettingsWindow : Window
     private const string AiStudioUrl = "https://aistudio.google.com/api-keys";
     private readonly bool _isThai;
     private readonly AppSettings _settings;
+    private readonly GeminiConfig _geminiConfig;
 
-    public SettingsWindow(bool isThai)
+    public SettingsWindow(bool isThai, GeminiConfig geminiConfig)
     {
         InitializeComponent();
         _isThai = isThai;
+        _geminiConfig = geminiConfig;
         _settings = AppSettingsService.Load();
         ApiKeyBox.Password = _settings.GeminiApiKey;
         ApplyLanguage();
@@ -49,19 +52,33 @@ public partial class SettingsWindow : Window
     private async void TestKeyButton_Click(object sender, RoutedEventArgs eventArgs)
     {
         TestKeyButton.IsEnabled = false;
+        SaveButton.IsEnabled = false;
+        TestProgressBar.Visibility = Visibility.Visible;
+        StatusText.Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText");
         StatusText.Text = _isThai ? "กำลังทดสอบ Gemini API key..." : "Testing Gemini API key...";
         try
         {
-            await GeminiApiKeyService.TestAsync(ApiKeyBox.Password);
-            StatusText.Text = _isThai ? "เชื่อมต่อ Gemini สำเร็จ" : "Gemini connection succeeded.";
+            var result = await GeminiApiKeyService.TestAsync(ApiKeyBox.Password, _geminiConfig.Model);
+            ApiKeyBox.Password = result.NormalizedKey;
+            _settings.GeminiApiKey = result.NormalizedKey;
+            AppSettingsService.Save(_settings);
+            StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(113, 208, 155));
+            StatusText.Text = _isThai
+                ? $"✓ KEY ใช้งานได้และบันทึกแล้ว • พบ {result.GenerateModelCount} โมเดล • ใช้ {result.RecommendedModel}"
+                : $"✓ Key works and was saved • {result.GenerateModelCount} models • Using {result.RecommendedModel}";
         }
         catch (Exception exception)
         {
-            StatusText.Text = _isThai ? $"ทดสอบไม่สำเร็จ: {exception.Message}" : $"Test failed: {exception.Message}";
+            StatusText.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(242, 154, 145));
+            StatusText.Text = _isThai
+                ? $"✕ ทดสอบไม่สำเร็จ: {exception.Message}\nหากเป็น key เก่า ให้สร้าง Auth key ใหม่จาก Google AI Studio"
+                : $"✕ Test failed: {exception.Message}\nCreate a new auth key in Google AI Studio if this is an old key.";
         }
         finally
         {
             TestKeyButton.IsEnabled = true;
+            SaveButton.IsEnabled = true;
+            TestProgressBar.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -73,7 +90,7 @@ public partial class SettingsWindow : Window
 
     private void SaveButton_Click(object sender, RoutedEventArgs eventArgs)
     {
-        _settings.GeminiApiKey = ApiKeyBox.Password.Trim();
+        _settings.GeminiApiKey = GeminiApiKeyService.Normalize(ApiKeyBox.Password);
         AppSettingsService.Save(_settings);
         DialogResult = true;
         Close();

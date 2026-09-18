@@ -21,9 +21,12 @@ dotnet run
 - ตารางยืดและหดตามความกว้างหน้าต่างอัตโนมัติ ค่า `width` ของแต่ละคอลัมน์ใน JSON ใช้เป็นสัดส่วนเทียบกับคอลัมน์อื่น
 - คลิก lineup เพื่อเปิด Gemini analysis card ซึ่งมี hero/item icons, build 2 ทางต่อฮีโร่, item timing, phase plan, counter แบบสั้น และ critical stage
 - หน้า analysis ใช้แท็บชื่อฮีโร่จริง เช่น `Wraith King / Sniper / Venge` โดยแต่ละแท็บมี timeline, แผนที่ Dota 2 จากไฟล์เกมปัจจุบัน, จุดเกิด neutral camp ทั้งหมด, เส้นทางฟาร์ม Radiant/Dire 5 ช่วง และ checklist ไปต่อ/ยกเลิก 4 ข้อ
-- แถบหัวหน้าหลักและหน้า analysis แสดง tag เวอร์ชันแอปจาก assembly (`APP v1.3.1`) และ Dota patch ล่าสุดจาก Valve
+- แถบหัวหน้าหลักและหน้า analysis แสดง tag เวอร์ชันแอปจาก assembly (`APP v1.3.2`) และ Dota patch ล่าสุดจาก Valve
 - หน้า **ค้นหาฮีโร่แก้ทาง** ใช้ธีมเดียวกับหน้าหลัก และโหมด `5v5 VERSUS` แสดงฮีโร่ครบทั้ง STR/AGI/INT/UNI พร้อมกัน 4 กลุ่มด้วยปุ่ม compact
 - ผล 5v5 ระบุว่าตัวแนะนำได้เปรียบศัตรูตัวใด พร้อมเปอร์เซ็นต์ เหตุผลเชิง mechanic แบบสั้น ปุ่มกลับไปเลือกฮีโร่ และทีมสวน 3 ชุด
+- ช่องค้นหาฮีโร่รองรับปุ่มค้นหา, Enter, ชื่อแบบเว้นวรรค/ขีด และแสดงจำนวนผลลัพธ์ทันที
+- หน้า Settings ตรวจ Gemini key กับโมเดล `generateContent` จริง บันทึก key ที่ผ่านทันที และแสดงผลสำเร็จ/ข้อผิดพลาดชัดเจน
+- เมื่อ OpenDota ไม่ตอบสนอง หน้าค้นหาและ 5v5 จะใช้ cache + Win Rate สำรองแทนการหยุดทำงาน
 - หน้า **Settings / Gemini API** บันทึก key ใน `%LocalAppData%\DotaComboBoard\settings.json`, ทดสอบ key และเปิด `https://aistudio.google.com/api-keys` ได้โดยตรง
 - เมนูหน้าหลัก **COMBO หลัก 3 ฮีโร่ / JSON** ใช้นำเข้า/ส่งออกเฉพาะชุด `Carry + Mid + Support` บนตารางหลัก ไม่รวมข้อมูลจาก Hero Counter หรือ 5v5
 - ไฟล์ Combo Pack ฝัง Dota patch และ generation prompt ไว้ใน JSON รองรับ append แบบข้ามชุดซ้ำ, replace พร้อม backup และเปิดอ่าน `board.json` เดิมได้

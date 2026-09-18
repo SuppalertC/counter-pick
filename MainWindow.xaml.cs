@@ -744,7 +744,7 @@ public partial class MainWindow : Window
         NavigationPopup.IsOpen = false;
         try
         {
-            if (new SettingsWindow(_isThai) { Owner = this }.ShowDialog() == true)
+            if (new SettingsWindow(_isThai, _config.Gemini) { Owner = this }.ShowDialog() == true)
             {
                 _settings.GeminiApiKey = AppSettingsService.Load().GeminiApiKey;
                 StatusText.Text = _isThai ? "บันทึกการตั้งค่า Gemini แล้ว" : "Gemini settings saved.";

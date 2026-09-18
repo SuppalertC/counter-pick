@@ -16,6 +16,6 @@ public static class AppVersionInfo
             return informationalVersion.Split('+')[0];
         }
 
-        return typeof(AppVersionInfo).Assembly.GetName().Version?.ToString(3) ?? "1.3.1";
+        return typeof(AppVersionInfo).Assembly.GetName().Version?.ToString(3) ?? "1.3.2";
     }
 }

@@ -64,9 +64,12 @@ public partial class HeroCounterWindow : Window
     private void ApplyFilter()
     {
         var query = SearchBox.Text.Trim();
+        var normalizedQuery = NormalizeSearch(query);
         var filtered = _heroes.Where(hero => string.IsNullOrWhiteSpace(query)
             || hero.Name.Contains(query, StringComparison.OrdinalIgnoreCase)
-            || hero.Key.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+            || hero.Key.Contains(query, StringComparison.OrdinalIgnoreCase)
+            || NormalizeSearch(hero.Name).Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase)
+            || NormalizeSearch(hero.Key).Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase)).ToList();
         StrengthItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "str");
         AgilityItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "agi");
         IntelligenceItems.ItemsSource = filtered.Where(hero => hero.PrimaryAttribute == "int");
@@ -77,6 +80,19 @@ public partial class HeroCounterWindow : Window
         TeamAgilityItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "agi");
         TeamIntelligenceItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "int");
         TeamUniversalItems.ItemsSource = teamFiltered.Where(hero => hero.PrimaryAttribute == "all");
+        SearchStatusText.Text = string.IsNullOrWhiteSpace(query)
+            ? _isThai ? $"พร้อมค้นหา {_heroes.Count} ฮีโร่" : $"Ready to search {_heroes.Count} heroes"
+            : filtered.Count == 0
+                ? _isThai ? $"ไม่พบฮีโร่ “{query}”" : $"No hero found for “{query}”"
+                : _isThai ? $"พบ {filtered.Count} ฮีโร่สำหรับ “{query}”" : $"Found {filtered.Count} hero(es) for “{query}”";
+    }
+
+    private static string NormalizeSearch(string value)
+    {
+        return new string(value
+            .Where(character => !char.IsWhiteSpace(character) && character is not '-' and not '_' and not '\'')
+            .Select(char.ToLowerInvariant)
+            .ToArray());
     }
 
     private void TeamHeroButton_Click(object sender, RoutedEventArgs eventArgs)
@@ -210,6 +226,10 @@ public partial class HeroCounterWindow : Window
                 : $"Pick {hero.PickRate:0.00}% • Win {hero.WinRate:0.0}%";
             CounterItems.ItemsSource = result.Counters;
             AdvantageItems.ItemsSource = result.Advantages;
+            MatchupSourceText.Text = _isThai
+                ? "OpenDota ไม่ตอบสนอง — ยังไม่มีข้อมูล matchup ของฮีโร่นี้ กรุณาลองใหม่ภายหลัง"
+                : "OpenDota is unavailable — matchup data for this hero is not cached yet.";
+            MatchupSourceText.Visibility = result.IsOfflineFallback ? Visibility.Visible : Visibility.Collapsed;
             LoadingPanel.Visibility = Visibility.Collapsed;
             ResultPanel.Visibility = Visibility.Visible;
         }
@@ -228,6 +248,8 @@ public partial class HeroCounterWindow : Window
         SubtitleText.Text = _isThai ? "ค้นหาแบบตัวต่อตัว หรือเลือกศัตรู 5 ตัวเพื่อจัดทีมสวน" : "Search one hero or build a full 5v5 counter draft.";
         CloseButton.Content = _isThai ? "ปิด" : "CLOSE";
         SearchBox.ToolTip = _isThai ? "พิมพ์ชื่อฮีโร่" : "Type a hero name";
+        SearchButton.Content = _isThai ? "ค้นหา" : "SEARCH";
+        ClearSearchButton.ToolTip = _isThai ? "ล้างคำค้นหา" : "Clear search";
         SingleModeTab.Header = _isThai ? "แก้ทาง 1 ตัว" : "1 HERO";
         TeamModeTab.Header = "5v5 VERSUS";
         EmptyResultText.Text = _isThai ? "เลือกฮีโร่เพื่อดูตัวแก้ทางและตัวที่เราได้เปรียบ" : "Select a hero to view counters and favorable matchups.";
@@ -251,6 +273,23 @@ public partial class HeroCounterWindow : Window
         {
             ApplyFilter();
         }
+    }
+
+    private void SearchBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs eventArgs)
+    {
+        if (eventArgs.Key == System.Windows.Input.Key.Enter)
+        {
+            ApplyFilter();
+            eventArgs.Handled = true;
+        }
+    }
+
+    private void SearchButton_Click(object sender, RoutedEventArgs eventArgs) => ApplyFilter();
+
+    private void ClearSearchButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        SearchBox.Clear();
+        SearchBox.Focus();
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs eventArgs) => Close();

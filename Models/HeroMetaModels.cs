@@ -36,7 +36,8 @@ public sealed class HeroMatchupDisplay
 public sealed record HeroMatchupResult(
     HeroDirectoryEntry SelectedHero,
     IReadOnlyList<HeroMatchupDisplay> Counters,
-    IReadOnlyList<HeroMatchupDisplay> Advantages);
+    IReadOnlyList<HeroMatchupDisplay> Advantages,
+    bool IsOfflineFallback);
 
 public sealed record HeroMatchupStat(int HeroId, int GamesPlayed, double SelectedHeroWinRate);
 
@@ -46,6 +47,7 @@ public sealed class TeamCounterResult
     public List<TeamCounterLineup> Teams { get; set; } = [];
     public string AiSummary { get; set; } = string.Empty;
     public bool UsedAi { get; set; }
+    public bool UsedMatchupFallback { get; set; }
 }
 
 public sealed class TeamCounterHeroRecommendation
