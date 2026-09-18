@@ -10,7 +10,25 @@ namespace DotaComboBoard.Services;
 
 public sealed class GeminiAnalysisService
 {
-    private const string SchemaVersion = "v10-three-fixed-schemas";
+    private const string SchemaVersion = "v11-lazy-analysis-tabs";
+    private const string OverviewPrompt = """
+        You are a current-patch Dota 2 drafting coach. Return only the compact overview requested by the exact JSON
+        schema. Use responseLanguage for explanations but keep canonical hero and item names in English. For each of
+        the three lineup heroes return exactly four practical items. Prefer itemKey values from currentItemPopularity;
+        when that source is empty, use only allowedFallbackItemKeys. Also return a realistic three-step draft pick
+        order from safest reveal to most important hero to hide, plus exactly three brief cautions. Never invent win
+        rates, patch changes, or numeric guarantees. Keep every explanation short and actionable.
+        """;
+    private const string HeroTabPrompt = """
+        You are a current-patch Dota 2 item and execution coach. Analyze only targetHero and return the exact JSON
+        schema. Use responseLanguage for explanations while canonical hero, item, and ability names stay English.
+        Return exactly two practical item options, each with three timing steps and six final items. Prefer itemKey
+        values from currentItemPopularity; when it is empty, use only allowedFallbackItemKeys. Return six timeline
+        steps, five farmRoute strings formatted "minute | camp or wave | action | leave when ...", and four
+        decisionChecks formatted "check ... | go when ... | abort when ...". Support prioritizes pulls, stacks,
+        wards, camp blocks, rotations, positioning, and core protection rather than taking core farm. Keep every
+        explanation compact. Never invent stats, patch changes, or fixed Radiant/Dire geometry.
+        """;
     private const string StrategyPrompt = """
         You are a current-patch Dota 2 drafting coach. Use only the supplied patch context and lineup. Return clear,
         compact prose in responseLanguage using the exact JSON schema. Thai means natural Thai explanations while
@@ -36,7 +54,7 @@ public sealed class GeminiAnalysisService
         or 24 English words.
         """;
 
-    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(90) };
+    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(60) };
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -45,10 +63,99 @@ public sealed class GeminiAnalysisService
 
     private readonly GeminiConfig _config;
     private readonly DotaPatchContextService _patchContextService = new();
+    private static readonly string[] FallbackItemKeys =
+    [
+        "magic_wand", "bracer", "wraith_band", "null_talisman", "bottle", "boots", "phase_boots",
+        "power_treads", "arcane_boots", "travel_boots", "soul_ring", "armlet", "blink", "desolator", "black_king_bar",
+        "aghanims_scepter", "aghanims_shard", "assault", "bloodthorn", "greater_crit", "butterfly",
+        "manta", "satanic", "skadi", "diffusal_blade", "disperser", "orchid", "maelstrom", "radiance",
+        "mjollnir", "gleipnir", "hurricane_pike", "dragon_lance", "shadow_blade", "silver_edge",
+        "bfury", "mask_of_madness", "basher", "abyssal_blade", "harpoon", "heart", "sphere",
+        "witch_blade", "refresher", "octarine_core", "kaya_and_sange", "shivas_guard", "lotus_orb", "force_staff",
+        "glimmer_cape", "solar_crest", "guardian_greaves", "aether_lens", "holy_locket", "mekansm",
+        "pipe", "crimson_guard", "cyclone", "wind_waker"
+    ];
 
     public GeminiAnalysisService(GeminiConfig config)
     {
         _config = config;
+    }
+
+    public async Task<ComboAnalysis> AnalyzeOverviewAsync(
+        LineupAnalysisRequest lineup,
+        string responseLanguage,
+        bool forceRefresh = false)
+    {
+        var patchContext = await _patchContextService.GetAsync(lineup, forceRefresh);
+        var cachePath = GetComponentCachePath(
+            GetCachePath(lineup, patchContext.PatchNumber, responseLanguage),
+            "overview");
+        if (!forceRefresh && File.Exists(cachePath))
+        {
+            try
+            {
+                var cached = JsonSerializer.Deserialize<ComboAnalysis>(await File.ReadAllTextAsync(cachePath), JsonOptions);
+                if (cached is not null)
+                {
+                    return cached;
+                }
+            }
+            catch (JsonException)
+            {
+            }
+        }
+
+        var apiKey = GeminiApiKeyService.Resolve(_config)
+            ?? throw new InvalidOperationException($"{_config.ApiKeyVariable} was not found in the environment or configured .env file.");
+        Directory.CreateDirectory(Path.GetDirectoryName(cachePath)!);
+        var analysis = ParseResponse(await SendRequestAsync(
+            apiKey,
+            CreateOverviewRequestBody(lineup, patchContext, responseLanguage),
+            true));
+        analysis.PatchNumber = patchContext.PatchNumber;
+        await File.WriteAllTextAsync(cachePath, JsonSerializer.Serialize(analysis, JsonOptions));
+        return analysis;
+    }
+
+    public async Task<HeroTabAnalysis> AnalyzeHeroAsync(
+        LineupAnalysisRequest lineup,
+        LineupPick targetHero,
+        string responseLanguage,
+        bool forceRefresh = false)
+    {
+        var patchContext = await _patchContextService.GetAsync(lineup, forceRefresh);
+        var heroIndex = lineup.Picks
+            .Select((pick, index) => new { pick, index })
+            .FirstOrDefault(value => ReferenceEquals(value.pick, targetHero))?.index ?? 0;
+        var cachePath = GetComponentCachePath(
+            GetCachePath(lineup, patchContext.PatchNumber, responseLanguage),
+            $"hero-{heroIndex}");
+        if (!forceRefresh && File.Exists(cachePath))
+        {
+            try
+            {
+                var cached = JsonSerializer.Deserialize<HeroTabAnalysis>(await File.ReadAllTextAsync(cachePath), JsonOptions);
+                if (cached is not null)
+                {
+                    return cached;
+                }
+            }
+            catch (JsonException)
+            {
+            }
+        }
+
+        var apiKey = GeminiApiKeyService.Resolve(_config)
+            ?? throw new InvalidOperationException($"{_config.ApiKeyVariable} was not found in the environment or configured .env file.");
+        Directory.CreateDirectory(Path.GetDirectoryName(cachePath)!);
+        var analysis = ParseHeroTabResponse(await SendRequestAsync(
+            apiKey,
+            CreateHeroTabRequestBody(lineup, targetHero, patchContext, responseLanguage),
+            true));
+        analysis.PatchNumber = patchContext.PatchNumber;
+        analysis.RolePlan.Build = analysis.Build;
+        await File.WriteAllTextAsync(cachePath, JsonSerializer.Serialize(analysis, JsonOptions));
+        return analysis;
     }
 
     public async Task<ComboAnalysis> AnalyzeAsync(LineupAnalysisRequest lineup, string responseLanguage, bool forceRefresh = false)
@@ -121,8 +228,24 @@ public sealed class GeminiAnalysisService
     {
         var payload = JsonSerializer.Serialize(requestBody);
         var models = (preferLite
-                ? new[] { "gemini-flash-latest", _config.Model }
-                : new[] { _config.Model, "gemini-flash-latest" })
+                ? new[]
+                {
+                    "gemini-3.5-flash-lite",
+                    _config.Model,
+                    "gemini-3.7-flash",
+                    "gemini-3.6-flash",
+                    "gemini-3.5-flash",
+                    "gemini-flash-latest"
+                }
+                : new[]
+                {
+                    _config.Model,
+                    "gemini-3.7-flash",
+                    "gemini-3.6-flash",
+                    "gemini-3.5-flash",
+                    "gemini-3.5-flash-lite",
+                    "gemini-flash-latest"
+                })
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         string? lastError = null;
@@ -131,7 +254,7 @@ public sealed class GeminiAnalysisService
         {
             var model = models[modelIndex];
             var endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/{Uri.EscapeDataString(model)}:generateContent";
-            const int maxAttempts = 4;
+            var maxAttempts = modelIndex == models.Length - 1 ? 2 : 1;
 
             for (var attempt = 0; attempt < maxAttempts; attempt++)
             {
@@ -188,6 +311,64 @@ public sealed class GeminiAnalysisService
             || statusCode == HttpStatusCode.BadGateway
             || statusCode == HttpStatusCode.ServiceUnavailable
             || statusCode == HttpStatusCode.GatewayTimeout;
+    }
+
+    private static object CreateOverviewRequestBody(
+        LineupAnalysisRequest lineup,
+        DotaPatchContext patchContext,
+        string responseLanguage)
+    {
+        var inputJson = JsonSerializer.Serialize(new
+        {
+            latestPatch = patchContext.PatchNumber,
+            responseLanguage,
+            lineup = lineup.Picks.Select(pick => new { pick.Hero, pick.Name, pick.Role }),
+            lineup.Specialty,
+            lineup.WinCondition,
+            currentItemPopularity = patchContext.Heroes,
+            allowedFallbackItemKeys = FallbackItemKeys,
+            relevantOfficialPatchNotes = JsonSerializer.Deserialize<JsonElement>(patchContext.RelevantPatchNotesJson)
+        });
+        return CreateStructuredRequest(
+            OverviewPrompt,
+            $"Create the lightweight overview for this input JSON:\n{inputJson}",
+            CreateOverviewSchema(),
+            3500);
+    }
+
+    private static object CreateHeroTabRequestBody(
+        LineupAnalysisRequest lineup,
+        LineupPick targetHero,
+        DotaPatchContext patchContext,
+        string responseLanguage)
+    {
+        var position = targetHero.Role.ToLowerInvariant() switch
+        {
+            "carry" => "1",
+            "mid" => "2",
+            "support" => "5",
+            _ => targetHero.Role
+        };
+        var heroContext = patchContext.Heroes.FirstOrDefault(hero =>
+            hero.HeroKey.Equals(targetHero.Hero, StringComparison.OrdinalIgnoreCase)
+            || hero.HeroName.Equals(targetHero.Name, StringComparison.OrdinalIgnoreCase));
+        var inputJson = JsonSerializer.Serialize(new
+        {
+            latestPatch = patchContext.PatchNumber,
+            responseLanguage,
+            targetHero = new { targetHero.Hero, targetHero.Name, targetHero.Role, position },
+            teammates = lineup.Picks.Select(pick => new { pick.Hero, pick.Name, pick.Role }),
+            lineup.Specialty,
+            lineup.WinCondition,
+            currentItemPopularity = heroContext,
+            allowedFallbackItemKeys = FallbackItemKeys,
+            relevantOfficialPatchNotes = JsonSerializer.Deserialize<JsonElement>(patchContext.RelevantPatchNotesJson)
+        });
+        return CreateStructuredRequest(
+            HeroTabPrompt,
+            $"Create this hero tab only for the target hero in the input JSON:\n{inputJson}",
+            CreateHeroTabSchema(),
+            7500);
     }
 
     private static object CreateRequestBody(LineupAnalysisRequest lineup, DotaPatchContext patchContext, string responseLanguage)
@@ -273,6 +454,162 @@ public sealed class GeminiAnalysisService
                 thinkingConfig = new { thinkingLevel = "low" },
                 maxOutputTokens
             }
+        };
+    }
+
+    private static object CreateOverviewSchema()
+    {
+        var overviewItem = new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                itemKey = new { type = "STRING" },
+                itemName = new { type = "STRING" },
+                reason = new { type = "STRING" }
+            },
+            required = new[] { "itemKey", "itemName", "reason" }
+        };
+        return new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                overview = new { type = "STRING" },
+                heroItems = new
+                {
+                    type = "ARRAY",
+                    minItems = 3,
+                    maxItems = 3,
+                    items = new
+                    {
+                        type = "OBJECT",
+                        properties = new
+                        {
+                            hero = new { type = "STRING" },
+                            role = new { type = "STRING" },
+                            items = new { type = "ARRAY", minItems = 4, maxItems = 4, items = overviewItem }
+                        },
+                        required = new[] { "hero", "role", "items" }
+                    }
+                },
+                draftOrder = new
+                {
+                    type = "ARRAY",
+                    minItems = 3,
+                    maxItems = 3,
+                    items = new
+                    {
+                        type = "OBJECT",
+                        properties = new
+                        {
+                            order = new { type = "INTEGER" },
+                            hero = new { type = "STRING" },
+                            reason = new { type = "STRING" },
+                            caution = new { type = "STRING" }
+                        },
+                        required = new[] { "order", "hero", "reason", "caution" }
+                    }
+                },
+                draftCautions = new
+                {
+                    type = "ARRAY",
+                    minItems = 3,
+                    maxItems = 3,
+                    items = new { type = "STRING" }
+                }
+            },
+            required = new[] { "overview", "heroItems", "draftOrder", "draftCautions" }
+        };
+    }
+
+    private static object CreateHeroTabSchema()
+    {
+        var item = new
+        {
+            type = "OBJECT",
+            properties = new { itemKey = new { type = "STRING" }, itemName = new { type = "STRING" } },
+            required = new[] { "itemKey", "itemName" }
+        };
+        var timing = new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                timing = new { type = "STRING" },
+                itemKey = new { type = "STRING" },
+                itemName = new { type = "STRING" },
+                reason = new { type = "STRING" }
+            },
+            required = new[] { "timing", "itemKey", "itemName", "reason" }
+        };
+        var buildOption = new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                name = new { type = "STRING" },
+                goal = new { type = "STRING" },
+                timings = new { type = "ARRAY", minItems = 3, maxItems = 3, items = timing },
+                finalItems = new { type = "ARRAY", minItems = 6, maxItems = 6, items = item }
+            },
+            required = new[] { "name", "goal", "timings", "finalItems" }
+        };
+        var timelineStep = new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                minute = new { type = "STRING" },
+                action = new { type = "STRING" },
+                objective = new { type = "STRING" }
+            },
+            required = new[] { "minute", "action", "objective" }
+        };
+        return new
+        {
+            type = "OBJECT",
+            properties = new
+            {
+                build = new
+                {
+                    type = "OBJECT",
+                    properties = new
+                    {
+                        hero = new { type = "STRING" },
+                        role = new { type = "STRING" },
+                        keyItem = new { type = "STRING" },
+                        criticalRule = new { type = "STRING" },
+                        options = new { type = "ARRAY", minItems = 2, maxItems = 2, items = buildOption }
+                    },
+                    required = new[] { "hero", "role", "keyItem", "criticalRule", "options" }
+                },
+                rolePlan = new
+                {
+                    type = "OBJECT",
+                    properties = new
+                    {
+                        hero = new { type = "STRING" },
+                        position = new { type = "STRING" },
+                        lanePositioning = new { type = "STRING" },
+                        timeline = new { type = "ARRAY", minItems = 6, maxItems = 6, items = timelineStep },
+                        farmRoute = new { type = "ARRAY", minItems = 5, maxItems = 5, items = new { type = "STRING" } },
+                        decisionChecks = new { type = "ARRAY", minItems = 4, maxItems = 4, items = new { type = "STRING" } },
+                        mapMovement = new { type = "STRING" },
+                        safeFarm = new { type = "STRING" },
+                        aheadPlan = new { type = "STRING" },
+                        behindPlan = new { type = "STRING" },
+                        triangleTiming = new { type = "STRING" },
+                        levelTiming = new { type = "STRING" }
+                    },
+                    required = new[]
+                    {
+                        "hero", "position", "lanePositioning", "timeline", "farmRoute", "decisionChecks",
+                        "mapMovement", "safeFarm", "aheadPlan", "behindPlan", "triangleTiming", "levelTiming"
+                    }
+                }
+            },
+            required = new[] { "build", "rolePlan" }
         };
     }
 
@@ -447,6 +784,19 @@ public sealed class GeminiAnalysisService
     {
         return JsonSerializer.Deserialize<ComboAnalysis>(ExtractResponseText(responseJson), JsonOptions)
             ?? throw new InvalidOperationException("Gemini returned invalid analysis JSON.");
+    }
+
+    private static HeroTabAnalysis ParseHeroTabResponse(string responseJson)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<HeroTabAnalysis>(ExtractResponseText(responseJson), JsonOptions)
+                ?? throw new InvalidOperationException("Gemini returned empty hero tab JSON.");
+        }
+        catch (JsonException exception)
+        {
+            throw new InvalidOperationException("Gemini returned incomplete hero tab JSON.", exception);
+        }
     }
 
     private static BuildResponse ParseBuildResponse(string responseJson)

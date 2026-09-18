@@ -8,9 +8,13 @@ namespace DotaComboBoard.Services;
 
 public sealed class DotaPatchContextService
 {
-    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(30) };
+    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(12) };
     private static readonly SemaphoreSlim BaseContextGate = new(1, 1);
     private static readonly ConcurrentDictionary<string, HeroPatchContext> HeroCache = new();
+    private static readonly string CacheDirectory = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "DotaComboBoard",
+        "patch-context-cache");
     private static BaseContext? _baseContext;
 
     public async Task<string> GetCurrentPatchNumberAsync(bool forceRefresh = false)
@@ -48,18 +52,32 @@ public sealed class DotaPatchContextService
                 return _baseContext;
             }
 
-            var patchListTask = GetStringWithRetryAsync("https://www.dota2.com/datafeed/patchnoteslist?language=english");
-            var itemCatalogTask = GetStringWithRetryAsync("https://api.opendota.com/api/constants/items");
-            await Task.WhenAll(patchListTask, itemCatalogTask);
-
-            using var patchListDocument = JsonDocument.Parse(await patchListTask);
+            var patchListJson = await GetCachedRemoteAsync(
+                "patch-list.json",
+                "https://www.dota2.com/datafeed/patchnoteslist?language=english",
+                forceRefresh,
+                required: true,
+                maxAttempts: 2);
+            using var patchListDocument = JsonDocument.Parse(patchListJson);
             var patches = patchListDocument.RootElement.GetProperty("patches");
             var patchNumber = patches[patches.GetArrayLength() - 1].GetProperty("patch_number").GetString()
                 ?? throw new InvalidOperationException("Valve returned an invalid patch number.");
-            var patchNotesJson = await GetStringWithRetryAsync(
-                $"https://www.dota2.com/datafeed/patchnotes?version={Uri.EscapeDataString(patchNumber)}&language=english");
+            var patchNotesJson = await GetCachedRemoteAsync(
+                $"patch-notes-{patchNumber}.json",
+                $"https://www.dota2.com/datafeed/patchnotes?version={Uri.EscapeDataString(patchNumber)}&language=english",
+                forceRefresh,
+                required: false,
+                maxAttempts: 2,
+                fallbackJson: "{}");
+            var itemCatalogJson = await GetCachedRemoteAsync(
+                "item-catalog.json",
+                "https://api.opendota.com/api/constants/items",
+                forceRefresh,
+                required: false,
+                maxAttempts: 1,
+                fallbackJson: "{}");
             var heroMetadata = await LoadHeroMetadataAsync();
-            var itemCatalog = ParseItemCatalog(await itemCatalogTask);
+            var itemCatalog = ParseItemCatalog(itemCatalogJson);
 
             if (_baseContext is null || !_baseContext.PatchNumber.Equals(patchNumber, StringComparison.Ordinal))
             {
@@ -100,10 +118,26 @@ public sealed class DotaPatchContextService
             throw new InvalidOperationException($"Hero metadata was not found for {pick.Name}.");
         }
 
+        if (baseContext.ItemCatalog.Count == 0)
+        {
+            var offlineContext = new HeroPatchContext(
+                metadata.Id,
+                metadata.Key,
+                metadata.Name,
+                new Dictionary<string, IReadOnlyList<PopularItem>>());
+            HeroCache[cacheKey] = offlineContext;
+            return offlineContext;
+        }
+
         try
         {
-            var popularityJson = await GetStringWithRetryAsync(
-                $"https://api.opendota.com/api/heroes/{metadata.Id}/itemPopularity");
+            var popularityJson = await GetCachedRemoteAsync(
+                $"item-popularity-{metadata.Id}.json",
+                $"https://api.opendota.com/api/heroes/{metadata.Id}/itemPopularity",
+                forceRefresh,
+                required: false,
+                maxAttempts: 1,
+                fallbackJson: "{}");
             var popularity = ParsePopularity(popularityJson, baseContext.ItemCatalog);
             var context = new HeroPatchContext(metadata.Id, metadata.Key, metadata.Name, popularity);
             HeroCache[cacheKey] = context;
@@ -115,19 +149,58 @@ public sealed class DotaPatchContextService
         }
     }
 
-    private static async Task<string> GetStringWithRetryAsync(string uri)
+    private static async Task<string> GetCachedRemoteAsync(
+        string cacheFileName,
+        string uri,
+        bool forceRefresh,
+        bool required,
+        int maxAttempts,
+        string? fallbackJson = null)
+    {
+        Directory.CreateDirectory(CacheDirectory);
+        var cachePath = Path.Combine(CacheDirectory, cacheFileName);
+        if (!forceRefresh && File.Exists(cachePath))
+        {
+            return await File.ReadAllTextAsync(cachePath);
+        }
+
+        try
+        {
+            var json = await GetStringWithRetryAsync(uri, maxAttempts, required ? 12 : 4);
+            await File.WriteAllTextAsync(cachePath, json);
+            return json;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
+        {
+            if (File.Exists(cachePath))
+            {
+                return await File.ReadAllTextAsync(cachePath);
+            }
+
+            if (!required && fallbackJson is not null)
+            {
+                await File.WriteAllTextAsync(cachePath, fallbackJson);
+                return fallbackJson;
+            }
+
+            throw;
+        }
+    }
+
+    private static async Task<string> GetStringWithRetryAsync(string uri, int maxAttempts, int timeoutSeconds)
     {
         Exception? lastException = null;
-        for (var attempt = 0; attempt < 3; attempt++)
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             try
             {
-                return await HttpClient.GetStringAsync(uri);
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+                return await HttpClient.GetStringAsync(uri, timeout.Token);
             }
             catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
             {
                 lastException = exception;
-                if (attempt < 2)
+                if (attempt < maxAttempts - 1)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2 * (attempt + 1)));
                 }

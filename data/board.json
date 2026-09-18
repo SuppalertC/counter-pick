@@ -27,27 +27,27 @@
           { "hero": "sniper", "name": "Sniper", "role": "Mid" },
           { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
         ]},
-        "detail": { "specialty": "🏰 Fortress / Siege", "specialtyTh": "🏰 ตั้งรับ / ตีป้อม", "winCondition": "Wraith King fronts, Venge saves, and Sniper fires from the backline.", "winConditionTh": "Wraith King ยืนหน้า, Venge ช่วยเซฟ และ Sniper ยิงจากแนวหลัง" }
-      }
-    },
-    {
-      "cells": {
-        "pick": { "picks": [
-          { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
-          { "hero": "sniper", "name": "Sniper", "role": "Mid" },
-          { "hero": "lich", "name": "Lich", "role": "Support" }
-        ]},
-        "detail": { "specialty": "🛡 Anti-Dive", "specialtyTh": "🛡 กันตัวล้วง", "winCondition": "Force enemies through Wraith King and Lich to reach Sniper.", "winConditionTh": "บังคับศัตรูให้ฝ่า Wraith King กับ Lich ก่อนถึง Sniper" }
+        "detail": { "specialty": "🔥 Frontline Burst Siege", "specialtyTh": "🔥 บุกแตกแนวหน้า", "winCondition": "Wraith King starts the fight, Venge amplifies damage, and Sniper deletes targets from range.", "winConditionTh": "Wraith King เปิดไฟต์, Venge เร่งดาเมจ และ Sniper ยิงปิดเป้าจากระยะไกล" }
       }
     },
     {
       "cells": {
         "pick": { "picks": [
           { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
-          { "hero": "dragon_knight", "name": "Dragon Knight", "role": "Mid" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚔ Dive & Reset", "specialtyTh": "⚔ กระโดดฆ่าแล้วถอย", "winCondition": "Ember forces reactions, Venge swaps the priority target, and Juggernaut finishes with Omnislash.", "winConditionTh": "Ember บังคับศัตรูใช้สกิล, Venge สลับเป้าหลัก แล้ว Juggernaut ปิดด้วย Omnislash" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
           { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
         ]},
-        "detail": { "specialty": "🏯 Objective", "specialtyTh": "🏯 เล่น Objective", "winCondition": "Get a kill, take a tower, then secure Roshan.", "winConditionTh": "ฆ่าให้ได้หนึ่งตัว → ตีป้อม → เก็บ Roshan" }
+        "detail": { "specialty": "🎯 Chain Catch Burst", "specialtyTh": "🎯 ล็อกต่อเนื่องระเบิดเป้า", "winCondition": "Puck catches first, Shadow Shaman extends the disable, and Juggernaut bursts the isolated hero.", "winConditionTh": "Puck จับก่อน, Shadow Shaman ล็อกต่อ แล้ว Juggernaut ระเบิดฮีโร่ที่แยกตัว" }
       }
     },
     {
@@ -55,19 +55,19 @@
         "pick": { "picks": [
           { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
           { "hero": "death_prophet", "name": "Death Prophet", "role": "Mid" },
-          { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+          { "hero": "silencer", "name": "Silencer", "role": "Support" }
         ]},
-        "detail": { "specialty": "🚂 Deathball", "specialtyTh": "🚂 รวมดัน", "winCondition": "When ultimates are ready, group as five and push.", "winConditionTh": "เมื่ออัลติพร้อม ให้รวม 5 คนแล้วดัน" }
+        "detail": { "specialty": "🚂 Ultimate Timing Rush", "specialtyTh": "🚂 เร่งเกมด้วยอัลติ", "winCondition": "Activate Exorcism, use Global Silence to deny the response, then force towers and Roshan.", "winConditionTh": "เปิด Exorcism แล้วใช้ Global Silence กันสวน จากนั้นบังคับตีป้อมและ Roshan" }
       }
     },
     {
       "cells": {
         "pick": { "picks": [
           { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
-          { "hero": "puck", "name": "Puck", "role": "Mid" },
-          { "hero": "silencer", "name": "Silencer", "role": "Support" }
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "lich", "name": "Lich", "role": "Support" }
         ]},
-        "detail": { "specialty": "🔇 Anti-Counterplay", "specialtyTh": "🔇 ปิดการโต้กลับ", "winCondition": "Coil or Omnislash, then Global Silence to stop the response.", "winConditionTh": "ใช้ Coil หรือ Omnislash แล้วตามด้วย Global Silence" }
+        "detail": { "specialty": "⚡ Magic Burst Cleanup", "specialtyTh": "⚡ เวทระเบิดแล้วเก็บงาน", "winCondition": "Zeus and Lich soften the whole fight so Juggernaut can clean up with Spin and Omnislash.", "winConditionTh": "Zeus กับ Lich ลดเลือดทั้งไฟต์ แล้ว Juggernaut เก็บงานด้วย Spin และ Omnislash" }
       }
     },
     {
@@ -77,7 +77,7 @@
           { "hero": "dragon_knight", "name": "Dragon Knight", "role": "Mid" },
           { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
         ]},
-        "detail": { "specialty": "🏹 Physical Siege", "specialtyTh": "🏹 ตีป้อมกายภาพ", "winCondition": "Stack armor reduction while Drow fires safely behind Dragon Knight.", "winConditionTh": "ลดเกราะศัตรู แล้วให้ Drow ยิงจากหลัง Dragon Knight" }
+        "detail": { "specialty": "🏹 Armor Break Siege", "specialtyTh": "🏹 ลดเกราะบุกป้อม", "winCondition": "Dragon Knight tanks the entry while Venge and Drow stack physical amplification and destroy objectives.", "winConditionTh": "Dragon Knight รับดาเมจหน้าไฟต์ ส่วน Venge กับ Drow ซ้อนดาเมจกายภาพและพัง Objective" }
       }
     },
     {
@@ -85,9 +85,9 @@
         "pick": { "picks": [
           { "hero": "drow_ranger", "name": "Drow Ranger", "role": "Carry" },
           { "hero": "puck", "name": "Puck", "role": "Mid" },
-          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          { "hero": "lich", "name": "Lich", "role": "Support" }
         ]},
-        "detail": { "specialty": "🪁 Kite / Save", "specialtyTh": "🪁 Kite / ช่วยเซฟ", "winCondition": "Puck creates chaos while Swap keeps Drow safe.", "winConditionTh": "Puck ป่วนไฟต์ และ Swap ช่วยให้ Drow ปลอดภัย" }
+        "detail": { "specialty": "🌀 Coil Volley Burst", "specialtyTh": "🌀 Coil ล็อกแล้วยิงแตก", "winCondition": "Puck locks multiple heroes, Lich punishes the clump, and Drow fires freely into the control.", "winConditionTh": "Puck ล็อกหลายตัว, Lich ลงโทษศัตรูที่ยืนรวม แล้ว Drow ยิงฟรีใส่วงคุม" }
       }
     },
     {
@@ -97,37 +97,7 @@
           { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
           { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
         ]},
-        "detail": { "specialty": "🗺 Space Creation", "specialtyTh": "🗺 สร้างพื้นที่", "winCondition": "Ember controls the map and creates room for Drow to farm.", "winConditionTh": "Ember คุมแผนที่และเปิดพื้นที่ให้ Drow ฟาร์ม" }
-      }
-    },
-    {
-      "cells": {
-        "pick": { "picks": [
-          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
-          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
-          { "hero": "keeper_of_the_light", "name": "Keeper of the Light", "role": "Support" }
-        ]},
-        "detail": { "specialty": "🌎 Global Economy", "specialtyTh": "🌎 คุมเกมทั่วแผนที่", "winCondition": "Spectre farms, Zeus adds global damage, and KotL controls mana and map tempo.", "winConditionTh": "Spectre ฟาร์ม, Zeus เติมดาเมจทั่วแผนที่ และ KotL คุมมานากับจังหวะเกม" }
-      }
-    },
-    {
-      "cells": {
-        "pick": { "picks": [
-          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
-          { "hero": "puck", "name": "Puck", "role": "Mid" },
-          { "hero": "silencer", "name": "Silencer", "role": "Support" }
-        ]},
-        "detail": { "specialty": "🌑 Global Teamfight", "specialtyTh": "🌑 ทีมไฟต์ทั่วแผนที่", "winCondition": "Spectre joins instantly and Global Silence locks down the fight.", "winConditionTh": "Spectre เข้าร่วมทันที แล้ว Global Silence ล็อกไฟต์" }
-      }
-    },
-    {
-      "cells": {
-        "pick": { "picks": [
-          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
-          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
-          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
-        ]},
-        "detail": { "specialty": "⚡ Long Fight", "specialtyTh": "⚡ ไฟต์ยาว", "winCondition": "Spectre and Ember extend the fight while Disruptor blocks every escape.", "winConditionTh": "Spectre กับ Ember ยื้อไฟต์ และ Disruptor ปิดทางหนี" }
+        "detail": { "specialty": "🗺 Two-Wave Pressure", "specialtyTh": "🗺 กดดันสองแนว", "winCondition": "Ember hunts and cuts waves while Venge protects Drow during aggressive tower pressure.", "winConditionTh": "Ember ไล่ฆ่าและตัดเวฟ ส่วน Venge คุ้มกัน Drow ตอนเร่งกดป้อม" }
       }
     },
     {
@@ -137,7 +107,7 @@
           { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
           { "hero": "ancient_apparition", "name": "Ancient Apparition", "role": "Support" }
         ]},
-        "detail": { "specialty": "🧊 Anti-Heal", "specialtyTh": "🧊 ตัดการฟื้นฟู", "winCondition": "Wraith King fronts, Ember sets up, and Ice Blast shuts down healing.", "winConditionTh": "Wraith King ยืนหน้า, Ember เปิดจังหวะ และ Ice Blast ปิดการฮีล" }
+        "detail": { "specialty": "🧊 Dive Anti-Heal", "specialtyTh": "🧊 ดำน้ำตัดฮีล", "winCondition": "Ice Blast marks the target, Ember dives the backline, and Wraith King commits without fearing the first death.", "winConditionTh": "Ice Blast มาร์กเป้า, Ember ดำแนวหลัง และ Wraith King ใส่สุดโดยไม่กลัวตายรอบแรก" }
       }
     },
     {
@@ -147,7 +117,7 @@
           { "hero": "puck", "name": "Puck", "role": "Mid" },
           { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
         ]},
-        "detail": { "specialty": "🎯 Catch → Objective", "specialtyTh": "🎯 จับแยก → Objective", "winCondition": "Pick off one hero and immediately convert the advantage into a tower.", "winConditionTh": "ฆ่าหนึ่งตัวแล้วเปลี่ยนความได้เปรียบเป็นป้อมทันที" }
+        "detail": { "specialty": "🔒 Blink Catch Objective", "specialtyTh": "🔒 กระโดดจับแล้วเอาป้อม", "winCondition": "Chain Coil, Hex, and Wraithfire Blast on one target, then convert the kill into towers.", "winConditionTh": "ต่อ Coil, Hex และ Wraithfire Blast ใส่เป้าเดียว แล้วเปลี่ยนคิลเป็นป้อมทันที" }
       }
     },
     {
@@ -157,17 +127,37 @@
           { "hero": "invoker", "name": "Invoker", "role": "Mid" },
           { "hero": "witch_doctor", "name": "Witch Doctor", "role": "Support" }
         ]},
-        "detail": { "specialty": "💥 5v5 Control", "specialtyTh": "💥 คุมไฟต์ 5v5", "winCondition": "Wraith King absorbs spells, then Invoker and Witch Doctor layer their control.", "winConditionTh": "Wraith King รับสกิลก่อน แล้ว Invoker กับ Witch Doctor ลงสกิลคุมต่อ" }
+        "detail": { "specialty": "💥 Layered 5v5 Burst", "specialtyTh": "💥 ซ้อนสกิลระเบิดไฟต์", "winCondition": "Wraith King absorbs the opening, then Invoker and Witch Doctor layer control and area damage.", "winConditionTh": "Wraith King รับสกิลเปิด แล้ว Invoker กับ Witch Doctor ซ้อนคอนโทรลและดาเมจพื้นที่" }
       }
     },
     {
       "cells": {
         "pick": { "picks": [
-          { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
-          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
-          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "ancient_apparition", "name": "Ancient Apparition", "role": "Support" }
         ]},
-        "detail": { "specialty": "⚔ Buff Carry", "specialtyTh": "⚔ บัฟแคร์รี่", "winCondition": "Alacrity and Venge buffs amplify Juggernaut's physical damage.", "winConditionTh": "Alacrity กับบัฟของ Venge เพิ่มดาเมจกายภาพให้ Juggernaut" }
+        "detail": { "specialty": "🌎 Global Delete", "specialtyTh": "🌎 เปิดแมพแล้วลบทันที", "winCondition": "Zeus reveals low targets, Ice Blast blocks recovery, and Spectre instantly joins to finish them.", "winConditionTh": "Zeus เปิดข้อมูลเป้าเลือดน้อย, Ice Blast ปิดการฟื้นฟู แล้ว Spectre เข้าปิดทันที" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚡ Backline Collapse", "specialtyTh": "⚡ พังแนวหลังพร้อมกัน", "winCondition": "Spectre and Ember collapse from two angles while Disruptor traps every retreat path.", "winConditionTh": "Spectre กับ Ember เข้าจากสองมุม ส่วน Disruptor ปิดทุกทางถอย" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "silencer", "name": "Silencer", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌑 Global Lockdown", "specialtyTh": "🌑 ล็อกไฟต์ทั่วแมพ", "winCondition": "Puck starts the fight, Spectre jumps the exposed backline, and Global Silence removes counterplay.", "winConditionTh": "Puck เปิดไฟต์, Spectre กระโดดใส่แนวหลังที่เปิดช่อง และ Global Silence ปิดการสวน" }
       }
     }
   ]

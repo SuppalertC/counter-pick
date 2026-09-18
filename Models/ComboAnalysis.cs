@@ -6,12 +6,59 @@ public sealed class ComboAnalysis
 {
     public string PatchNumber { get; set; } = string.Empty;
     public string Overview { get; set; } = string.Empty;
+    public List<HeroItemOverview> HeroItems { get; set; } = [];
+    public List<DraftPickStep> DraftOrder { get; set; } = [];
+    public List<string> DraftCautions { get; set; } = [];
     public List<HeroBuildRecommendation> HeroBuilds { get; set; } = [];
     public PhasePlan PhasePlan { get; set; } = new();
     public List<CounterHero> CounterHeroes { get; set; } = [];
     public List<CriticalStage> CriticalStages { get; set; } = [];
     public List<RoleExecutionPlan> RolePlans { get; set; } = [];
     public List<HeroReplacement> Replacements { get; set; } = [];
+}
+
+public sealed class HeroItemOverview
+{
+    public string Hero { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+    public List<OverviewItem> Items { get; set; } = [];
+
+    [JsonIgnore]
+    public string IconPath { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string RoleDisplay { get; set; } = string.Empty;
+}
+
+public sealed class OverviewItem
+{
+    public string ItemKey { get; set; } = string.Empty;
+    public string ItemName { get; set; } = string.Empty;
+    public string Reason { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string IconPath { get; set; } = string.Empty;
+}
+
+public sealed class DraftPickStep
+{
+    public int Order { get; set; }
+    public string Hero { get; set; } = string.Empty;
+    public string Reason { get; set; } = string.Empty;
+    public string Caution { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string IconPath { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string OrderDisplay { get; set; } = string.Empty;
+}
+
+public sealed class HeroTabAnalysis
+{
+    public string PatchNumber { get; set; } = string.Empty;
+    public HeroBuildRecommendation Build { get; set; } = new();
+    public RoleExecutionPlan RolePlan { get; set; } = new();
 }
 
 public sealed class HeroBuildRecommendation

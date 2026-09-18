@@ -247,7 +247,7 @@
                     <Button x:Name="RetryButton" Content="TRY AGAIN" HorizontalAlignment="Center" Click="RetryButton_Click" />
                 </StackPanel>
 
-                <TabControl x:Name="AnalysisTabs" Visibility="Collapsed">
+                <TabControl x:Name="AnalysisTabs" Visibility="Collapsed" SelectionChanged="AnalysisTabs_SelectionChanged">
                     <TabItem x:Name="OverviewTab" Header="OVERVIEW">
                         <ScrollViewer Padding="16,14,9,18" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <StackPanel>
@@ -257,53 +257,62 @@
                                         <TextBlock x:Name="OverviewText" Margin="0,9,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
-                                <TextBlock x:Name="HowToPlayHeaderText" Style="{StaticResource SectionTitleStyle}" Text="HOW TO PLAY" />
-                                <UniformGrid Columns="2">
-                                    <Border Margin="0,0,5,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LanePhaseHeaderText" Text="LANE PHASE" FontWeight="Bold" /><TextBlock x:Name="LanePhaseText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
-                                    <Border Margin="5,0,0,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="TeamFightHeaderText" Text="TEAM FIGHT" FontWeight="Bold" /><TextBlock x:Name="TeamFightText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
-                                    <Border Margin="0,5,5,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="PickOffHeaderText" Text="PICK OFF" FontWeight="Bold" /><TextBlock x:Name="PickOffText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
-                                    <Border Margin="5,5,0,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LosingGameHeaderText" Text="LOSING GAME" FontWeight="Bold" /><TextBlock x:Name="LosingGameText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
-                                </UniformGrid>
-
-                                <TextBlock x:Name="CountersHeaderText" Style="{StaticResource SectionTitleStyle}" Text="COUNTERS" />
-                                <ItemsControl x:Name="CounterItems">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="10">
-                                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="46" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="38" Height="38" Source="{Binding IconPath}" Stretch="UniformToFill" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" /><StackPanel Grid.Column="2" VerticalAlignment="Center"><TextBlock Text="{Binding Threat}" FontSize="12" TextWrapping="Wrap" /><TextBlock Margin="0,2,0,0" Text="{Binding Response, StringFormat='→ {0}'}" FontSize="11" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel></Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-
-                                <TextBlock x:Name="ReplacementHeaderText" Style="{StaticResource SectionTitleStyle}" Text="REPLACEMENTS" />
-                                <ItemsControl x:Name="ReplacementItems">
+                                <TextBlock x:Name="ItemsHeaderText" Style="{StaticResource SectionTitleStyle}" Text="HERO ITEMS" />
+                                <ItemsControl x:Name="HeroItemItems">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border Margin="0,0,0,8" Style="{StaticResource AnalysisCardStyle}">
-                                                <StackPanel>
-                                                    <StackPanel Orientation="Horizontal"><Image Width="36" Height="36" Source="{Binding OriginalHeroIconPath}" /><TextBlock Margin="9,0,0,0" Text="{Binding OriginalHero}" VerticalAlignment="Center" FontWeight="Bold" /></StackPanel>
-                                                    <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Alternatives}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <Image Width="86" Height="48" HorizontalAlignment="Left" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                                        <TextBlock Margin="0,7,0,0" Text="{Binding Hero}" FontWeight="Bold" />
+                                                        <TextBlock Text="{Binding RoleDisplay}" Style="{StaticResource MicroLabelStyle}" />
+                                                    </StackPanel>
+                                                    <ItemsControl Grid.Column="1" ItemsSource="{Binding Items}">
+                                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Border Margin="0,0,0,5" Background="{StaticResource AnalysisCardRaised}" CornerRadius="6" Padding="8">
-                                                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="42" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="34" Height="34" Source="{Binding IconPath}" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="SemiBold" /><TextBlock Grid.Column="2" Text="{Binding Reason}" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></Grid>
+                                                                <Border Width="245" MinHeight="64" Margin="0,0,7,7" Background="{StaticResource AnalysisCardRaised}" CornerRadius="7" Padding="8">
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                                        <Image Width="44" Height="33" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                                                            <TextBlock Text="{Binding ItemName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                            <TextBlock Margin="0,2,0,0" Text="{Binding Reason}" FontSize="10" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                                                                        </StackPanel>
+                                                                    </Grid>
                                                                 </Border>
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
-                                                </StackPanel>
+                                                </Grid>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-
-                                <TextBlock x:Name="CriticalHeaderText" Style="{StaticResource SectionTitleStyle}" Foreground="{StaticResource AnalysisWarning}" Text="CRITICAL — DO NOT MISS" />
-                                <ItemsControl x:Name="CriticalItems">
+                                <TextBlock x:Name="DraftHeaderText" Style="{StaticResource SectionTitleStyle}" Text="DRAFT PICK ORDER" />
+                                <ItemsControl x:Name="DraftOrderItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,8" Style="{StaticResource AnalysisCardStyle}" Padding="10">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="54" /><ColumnDefinition Width="54" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                    <Border Width="42" Height="42" Background="{StaticResource AccentBrush}" CornerRadius="21"><TextBlock Text="{Binding OrderDisplay}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White" /></Border>
+                                                    <Image Grid.Column="1" Width="46" Height="46" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                                    <TextBlock Grid.Column="2" Margin="9,0,0,0" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" />
+                                                    <StackPanel Grid.Column="3" VerticalAlignment="Center"><TextBlock Text="{Binding Reason}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding Caution, StringFormat='⚠ {0}'}" Foreground="{StaticResource AnalysisWarning}" FontSize="11" TextWrapping="Wrap" /></StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="CautionsHeaderText" Style="{StaticResource SectionTitleStyle}" Foreground="{StaticResource AnalysisWarning}" Text="DRAFT CAUTIONS" />
+                                <ItemsControl x:Name="DraftCautionItems">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border Margin="0,0,0,7" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="9" Padding="11">
-                                                <StackPanel><TextBlock Text="{Binding Owner}" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Margin="0,3,0,0" Text="{Binding Rule}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding FailureImpactDisplay}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel>
+                                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="26" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><TextBlock Text="!" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" /></Grid>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -311,9 +320,15 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem x:Name="Pos1Tab" Header="POS 1 — CARRY"><ContentControl x:Name="Pos1Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
-                    <TabItem x:Name="Pos2Tab" Header="POS 2 — MID"><ContentControl x:Name="Pos2Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
-                    <TabItem x:Name="Pos5Tab" Header="POS 5 — SUPPORT"><ContentControl x:Name="Pos5Content" ContentTemplate="{StaticResource RolePlanTemplate}" /></TabItem>
+                    <TabItem x:Name="Pos1Tab" Header="POS 1 — CARRY">
+                        <Grid><ContentControl x:Name="Pos1Content" Visibility="Collapsed" ContentTemplate="{StaticResource RolePlanTemplate}" /><StackPanel x:Name="Pos1LoadingPanel" HorizontalAlignment="Center" VerticalAlignment="Center"><ProgressBar Width="230" Height="4" IsIndeterminate="True" /><TextBlock x:Name="Pos1LoadingText" Margin="0,10,0,0" Text="Loading this hero only..." Foreground="{StaticResource SecondaryText}" /></StackPanel><StackPanel x:Name="Pos1ErrorPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock x:Name="Pos1ErrorText" MaxWidth="560" TextAlignment="Center" TextWrapping="Wrap" /><Button Margin="0,12,0,0" Content="TRY AGAIN" Click="Pos1RetryButton_Click" /></StackPanel></Grid>
+                    </TabItem>
+                    <TabItem x:Name="Pos2Tab" Header="POS 2 — MID">
+                        <Grid><ContentControl x:Name="Pos2Content" Visibility="Collapsed" ContentTemplate="{StaticResource RolePlanTemplate}" /><StackPanel x:Name="Pos2LoadingPanel" HorizontalAlignment="Center" VerticalAlignment="Center"><ProgressBar Width="230" Height="4" IsIndeterminate="True" /><TextBlock x:Name="Pos2LoadingText" Margin="0,10,0,0" Text="Loading this hero only..." Foreground="{StaticResource SecondaryText}" /></StackPanel><StackPanel x:Name="Pos2ErrorPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock x:Name="Pos2ErrorText" MaxWidth="560" TextAlignment="Center" TextWrapping="Wrap" /><Button Margin="0,12,0,0" Content="TRY AGAIN" Click="Pos2RetryButton_Click" /></StackPanel></Grid>
+                    </TabItem>
+                    <TabItem x:Name="Pos5Tab" Header="POS 5 — SUPPORT">
+                        <Grid><ContentControl x:Name="Pos5Content" Visibility="Collapsed" ContentTemplate="{StaticResource RolePlanTemplate}" /><StackPanel x:Name="Pos5LoadingPanel" HorizontalAlignment="Center" VerticalAlignment="Center"><ProgressBar Width="230" Height="4" IsIndeterminate="True" /><TextBlock x:Name="Pos5LoadingText" Margin="0,10,0,0" Text="Loading this hero only..." Foreground="{StaticResource SecondaryText}" /></StackPanel><StackPanel x:Name="Pos5ErrorPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"><TextBlock x:Name="Pos5ErrorText" MaxWidth="560" TextAlignment="Center" TextWrapping="Wrap" /><Button Margin="0,12,0,0" Content="TRY AGAIN" Click="Pos5RetryButton_Click" /></StackPanel></Grid>
+                    </TabItem>
                 </TabControl>
             </Grid>
         </Border>

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Controls;
 using DotaComboBoard.Models;
 using DotaComboBoard.Services;
 
@@ -11,6 +12,9 @@ public partial class AnalysisWindow : Window
     private readonly DotaAssetResolver _assetResolver = new();
     private readonly LineupAnalysisRequest _lineup;
     private readonly bool _isThai;
+    private readonly HashSet<int> _loadedHeroTabs = [];
+    private readonly HashSet<int> _loadingHeroTabs = [];
+    private bool _initialized;
 
     public AnalysisWindow(RowConfig row, GeminiConfig config, bool isThai)
     {
@@ -26,34 +30,37 @@ public partial class AnalysisWindow : Window
 
         ApplyLanguageText();
         LineupItems.ItemsSource = _lineup.Picks;
-        Loaded += async (_, _) => await LoadAnalysisAsync(false);
+        _initialized = true;
+        Loaded += async (_, _) => await LoadOverviewAsync(false);
     }
 
-    private async Task LoadAnalysisAsync(bool forceRefresh)
+    private async Task LoadOverviewAsync(bool forceRefresh)
     {
         LoadingPanel.Visibility = Visibility.Visible;
         ErrorPanel.Visibility = Visibility.Collapsed;
         AnalysisTabs.Visibility = Visibility.Collapsed;
         ReanalyzeButton.Visibility = Visibility.Collapsed;
 
+        if (forceRefresh)
+        {
+            ResetHeroTabs();
+        }
+
         try
         {
-            var analysis = await _analysisService.AnalyzeAsync(_lineup, _isThai ? "Thai" : "English", forceRefresh);
-            await _assetResolver.PopulateAnalysisAssetsAsync(analysis, _lineup.Picks);
-            ApplyResultLanguage(analysis);
+            var analysis = await _analysisService.AnalyzeOverviewAsync(
+                _lineup,
+                _isThai ? "Thai" : "English",
+                forceRefresh);
+            await _assetResolver.PopulateOverviewAssetsAsync(analysis, _lineup.Picks);
+            ApplyOverviewLanguage(analysis);
             PatchText.Text = _isThai ? $"แพตช์ {analysis.PatchNumber}" : $"PATCH {analysis.PatchNumber}";
             AnalysisPatchTagText.Text = $"DOTA {analysis.PatchNumber}";
             OverviewText.Text = analysis.Overview;
-            LanePhaseText.Text = analysis.PhasePlan.LanePhase;
-            TeamFightText.Text = analysis.PhasePlan.TeamFight;
-            PickOffText.Text = analysis.PhasePlan.PickOff;
-            LosingGameText.Text = analysis.PhasePlan.LosingGame;
-            CounterItems.ItemsSource = analysis.CounterHeroes;
-            CriticalItems.ItemsSource = analysis.CriticalStages;
-            ReplacementItems.ItemsSource = analysis.Replacements;
-            Pos1Content.Content = FindRolePlan(analysis, "1", 0);
-            Pos2Content.Content = FindRolePlan(analysis, "2", 1);
-            Pos5Content.Content = FindRolePlan(analysis, "5", 2);
+            HeroItemItems.ItemsSource = analysis.HeroItems;
+            DraftOrderItems.ItemsSource = analysis.DraftOrder.OrderBy(step => step.Order);
+            DraftCautionItems.ItemsSource = analysis.DraftCautions;
+            AnalysisTabs.SelectedItem = OverviewTab;
             LoadingPanel.Visibility = Visibility.Collapsed;
             AnalysisTabs.Visibility = Visibility.Visible;
             ReanalyzeButton.Visibility = Visibility.Visible;
@@ -67,85 +74,110 @@ public partial class AnalysisWindow : Window
         }
     }
 
+    private async Task LoadHeroTabAsync(int tabIndex, bool forceRefresh)
+    {
+        if (_loadedHeroTabs.Contains(tabIndex) && !forceRefresh || !_loadingHeroTabs.Add(tabIndex))
+        {
+            return;
+        }
+
+        var pick = GetPickForTab(tabIndex);
+        if (pick is null)
+        {
+            ShowHeroTabError(tabIndex, _isThai ? "ไม่พบฮีโร่ของแท็บนี้" : "No hero is assigned to this tab.");
+            _loadingHeroTabs.Remove(tabIndex);
+            return;
+        }
+
+        ShowHeroTabLoading(tabIndex);
+        try
+        {
+            var analysis = await _analysisService.AnalyzeHeroAsync(
+                _lineup,
+                pick,
+                _isThai ? "Thai" : "English",
+                forceRefresh);
+            await _assetResolver.PopulateHeroTabAssetsAsync(analysis);
+            ApplyHeroTabLanguage(analysis);
+            GetHeroContent(tabIndex).Content = analysis.RolePlan;
+            GetHeroContent(tabIndex).Visibility = Visibility.Visible;
+            GetHeroLoadingPanel(tabIndex).Visibility = Visibility.Collapsed;
+            GetHeroErrorPanel(tabIndex).Visibility = Visibility.Collapsed;
+            _loadedHeroTabs.Add(tabIndex);
+        }
+        catch (Exception exception)
+        {
+            ShowHeroTabError(
+                tabIndex,
+                _isThai ? $"โหลดข้อมูลฮีโร่ไม่สำเร็จ: {exception.Message}" : exception.Message);
+        }
+        finally
+        {
+            _loadingHeroTabs.Remove(tabIndex);
+        }
+    }
+
     private void ApplyLanguageText()
     {
         Title = _isThai ? "วิเคราะห์ชุดฮีโร่" : "Lineup Analysis";
         HeaderTitleText.Text = _isThai ? "วิเคราะห์ทีม" : "LINEUP INTELLIGENCE";
         CloseButton.Content = _isThai ? "ปิด" : "CLOSE";
-        LoadingTitleText.Text = _isThai ? "กำลังอ่านแพตช์ล่าสุดและข้อมูลไอเทม..." : "READING CURRENT PATCH + BUILD DATA...";
-        LoadingDetailText.Text = _isThai ? "แพตช์ Valve • ไอเทม OpenDota • วิเคราะห์ด้วย Gemini" : "Valve patch notes • OpenDota items • Gemini analysis";
+        LoadingTitleText.Text = _isThai ? "กำลังโหลด Overview..." : "LOADING OVERVIEW...";
+        LoadingDetailText.Text = _isThai
+            ? "โหลดเฉพาะไอเทมและลำดับดราฟต์ • แท็บฮีโร่ยังไม่โหลด"
+            : "Items and draft order only • Hero tabs stay unloaded";
         ErrorTitleText.Text = _isThai ? "วิเคราะห์ไม่สำเร็จ" : "ANALYSIS FAILED";
         RetryButton.Content = _isThai ? "ลองอีกครั้ง" : "TRY AGAIN";
         OverviewHeaderText.Text = _isThai ? "ภาพรวม" : "OVERVIEW";
-        HowToPlayHeaderText.Text = _isThai ? "แผนการเล่น" : "HOW TO PLAY";
-        LanePhaseHeaderText.Text = _isThai ? "ช่วงยืนเลน" : "LANE PHASE";
-        TeamFightHeaderText.Text = _isThai ? "ทีมไฟต์" : "TEAM FIGHT";
-        PickOffHeaderText.Text = _isThai ? "จับแยก" : "PICK OFF";
-        LosingGameHeaderText.Text = _isThai ? "เกมตาม" : "LOSING GAME";
-        CountersHeaderText.Text = _isThai ? "ตัวแก้ทาง" : "COUNTERS";
-        ReplacementHeaderText.Text = _isThai ? "ตัวเลือกทดแทน" : "REPLACEMENTS";
-        CriticalHeaderText.Text = _isThai ? "จุดสำคัญ — ห้ามพลาด" : "CRITICAL — DO NOT MISS";
+        ItemsHeaderText.Text = _isThai ? "ไอเทมแนะนำของแต่ละฮีโร่" : "HERO ITEMS";
+        DraftHeaderText.Text = _isThai ? "ลำดับการหยิบ" : "DRAFT PICK ORDER";
+        CautionsHeaderText.Text = _isThai ? "จุดที่ต้องระวัง" : "DRAFT CAUTIONS";
         OverviewTab.Header = _isThai ? "ภาพรวม" : "OVERVIEW";
         Pos1Tab.Header = BuildHeroTabHeader("carry", "1", 0);
         Pos2Tab.Header = BuildHeroTabHeader("mid", "2", 1);
         Pos5Tab.Header = BuildHeroTabHeader("support", "5", 2);
+        var heroLoadingText = _isThai ? "กำลังโหลดเฉพาะฮีโร่แท็บนี้..." : "Loading this hero tab only...";
+        Pos1LoadingText.Text = heroLoadingText;
+        Pos2LoadingText.Text = heroLoadingText;
+        Pos5LoadingText.Text = heroLoadingText;
         DisclaimerText.Text = _isThai
-            ? "แนวทางออกไอเทมอ้างอิงแพตช์ Valve ล่าสุดและความนิยมจาก OpenDota — AI อาจผิดพลาดได้"
-            : "Builds use current Valve patch + OpenDota popularity. AI can still be wrong.";
-        ReanalyzeButton.Content = _isThai ? "อัปเดตแพตช์ + วิเคราะห์ใหม่" : "REFRESH PATCH + ANALYZE";
+            ? "Overview โหลดก่อน • ข้อมูลละเอียดของฮีโร่จะโหลดเมื่อกดแท็บนั้นเท่านั้น • AI อาจผิดพลาดได้"
+            : "Overview loads first. Detailed hero data loads only when its tab is opened. AI can be wrong.";
+        ReanalyzeButton.Content = _isThai ? "อัปเดต Overview" : "REFRESH OVERVIEW";
         ModelText.Text = _isThai
-            ? "GEMINI FLASH • JSON คงรูปแบบ • บริบทแพตช์ล่าสุด"
-            : "GEMINI FLASH • FIXED SCHEMA • LIVE PATCH CONTEXT";
+            ? "GEMINI FLASH • LAZY LOAD รายแท็บ • บริบทแพตช์ล่าสุด"
+            : "GEMINI FLASH • LAZY TAB LOADING • LIVE PATCH CONTEXT";
         AnalysisAppVersionTagText.Text = $"APP v{AppVersionInfo.Current}";
         AnalysisPatchTagText.Text = "DOTA PATCH …";
     }
 
-    private static RoleExecutionPlan? FindRolePlan(ComboAnalysis analysis, string position, int fallbackIndex)
+    private void ApplyOverviewLanguage(ComboAnalysis analysis)
     {
-        return analysis.RolePlans.FirstOrDefault(plan => plan.Position.Equals(position, StringComparison.OrdinalIgnoreCase))
-            ?? analysis.RolePlans.ElementAtOrDefault(fallbackIndex);
+        foreach (var heroItems in analysis.HeroItems)
+        {
+            heroItems.RoleDisplay = _isThai
+                ? $"ตำแหน่ง: {LocalizeRole(heroItems.Role)}"
+                : $"ROLE: {heroItems.Role}";
+        }
+
+        foreach (var draftStep in analysis.DraftOrder)
+        {
+            draftStep.OrderDisplay = draftStep.Order.ToString();
+        }
     }
 
-    private string BuildHeroTabHeader(string role, string position, int fallbackIndex)
+    private void ApplyHeroTabLanguage(HeroTabAnalysis analysis)
     {
-        var pick = _lineup.Picks.FirstOrDefault(value => value.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
-            ?? _lineup.Picks.ElementAtOrDefault(fallbackIndex);
-        if (pick is null)
-        {
-            return $"POS {position}";
-        }
-
-        return _isThai
-            ? $"{pick.Name} • {LocalizeRole(pick.Role)}"
-            : $"{pick.Name} • POS {position}";
-    }
-
-    private void ApplyResultLanguage(ComboAnalysis analysis)
-    {
-        foreach (var heroBuild in analysis.HeroBuilds)
-        {
-            heroBuild.RoleDisplay = _isThai
-                ? $"ตำแหน่ง: {LocalizeRole(heroBuild.Role)}"
-                : $"ROLE: {heroBuild.Role}";
-            heroBuild.KeyItemDisplay = _isThai
-                ? $"ไอเทมหลัก: {heroBuild.KeyItem}"
-                : $"KEY ITEM: {heroBuild.KeyItem}";
-            heroBuild.CriticalRuleDisplay = _isThai
-                ? $"สำคัญ: {heroBuild.CriticalRule}"
-                : $"CRITICAL: {heroBuild.CriticalRule}";
-        }
-
-        foreach (var criticalStage in analysis.CriticalStages)
-        {
-            criticalStage.FailureImpactDisplay = _isThai
-                ? $"พลาดแล้ว: {criticalStage.FailureImpact}"
-                : $"FAILURE: {criticalStage.FailureImpact}";
-        }
-
-        foreach (var rolePlan in analysis.RolePlans)
-        {
-            ApplyMapGuide(rolePlan);
-        }
+        analysis.Build.RoleDisplay = _isThai
+            ? $"ตำแหน่ง: {LocalizeRole(analysis.Build.Role)}"
+            : $"ROLE: {analysis.Build.Role}";
+        analysis.Build.KeyItemDisplay = _isThai
+            ? $"ไอเทมหลัก: {analysis.Build.KeyItem}"
+            : $"KEY ITEM: {analysis.Build.KeyItem}";
+        analysis.Build.CriticalRuleDisplay = _isThai
+            ? $"สำคัญ: {analysis.Build.CriticalRule}"
+            : $"CRITICAL: {analysis.Build.CriticalRule}";
+        ApplyMapGuide(analysis.RolePlan);
     }
 
     private void ApplyMapGuide(RoleExecutionPlan rolePlan)
@@ -177,6 +209,87 @@ public partial class AnalysisWindow : Window
         rolePlan.RadiantMapRoute = (_isThai ? "Radiant: " : "RADIANT: ") + routes.Item1;
         rolePlan.DireMapRoute = (_isThai ? "Dire: ใช้เส้นสีส้มแบบกลับด้าน — " : "DIRE: Follow the mirrored orange route — ") + routes.Item1;
         rolePlan.MapFarmRule = routes.Item2;
+    }
+
+    private LineupPick? GetPickForTab(int tabIndex)
+    {
+        var role = tabIndex switch { 1 => "carry", 2 => "mid", 3 => "support", _ => string.Empty };
+        return _lineup.Picks.FirstOrDefault(pick => pick.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
+            ?? _lineup.Picks.ElementAtOrDefault(tabIndex - 1);
+    }
+
+    private ContentControl GetHeroContent(int tabIndex) => tabIndex switch
+    {
+        1 => Pos1Content,
+        2 => Pos2Content,
+        3 => Pos5Content,
+        _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
+    };
+
+    private StackPanel GetHeroLoadingPanel(int tabIndex) => tabIndex switch
+    {
+        1 => Pos1LoadingPanel,
+        2 => Pos2LoadingPanel,
+        3 => Pos5LoadingPanel,
+        _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
+    };
+
+    private StackPanel GetHeroErrorPanel(int tabIndex) => tabIndex switch
+    {
+        1 => Pos1ErrorPanel,
+        2 => Pos2ErrorPanel,
+        3 => Pos5ErrorPanel,
+        _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
+    };
+
+    private TextBlock GetHeroErrorText(int tabIndex) => tabIndex switch
+    {
+        1 => Pos1ErrorText,
+        2 => Pos2ErrorText,
+        3 => Pos5ErrorText,
+        _ => throw new ArgumentOutOfRangeException(nameof(tabIndex))
+    };
+
+    private void ShowHeroTabLoading(int tabIndex)
+    {
+        GetHeroContent(tabIndex).Visibility = Visibility.Collapsed;
+        GetHeroErrorPanel(tabIndex).Visibility = Visibility.Collapsed;
+        GetHeroLoadingPanel(tabIndex).Visibility = Visibility.Visible;
+    }
+
+    private void ShowHeroTabError(int tabIndex, string message)
+    {
+        GetHeroContent(tabIndex).Visibility = Visibility.Collapsed;
+        GetHeroLoadingPanel(tabIndex).Visibility = Visibility.Collapsed;
+        GetHeroErrorText(tabIndex).Text = message;
+        GetHeroErrorPanel(tabIndex).Visibility = Visibility.Visible;
+    }
+
+    private void ResetHeroTabs()
+    {
+        _loadedHeroTabs.Clear();
+        _loadingHeroTabs.Clear();
+        foreach (var tabIndex in new[] { 1, 2, 3 })
+        {
+            GetHeroContent(tabIndex).Content = null;
+            GetHeroContent(tabIndex).Visibility = Visibility.Collapsed;
+            GetHeroErrorPanel(tabIndex).Visibility = Visibility.Collapsed;
+            GetHeroLoadingPanel(tabIndex).Visibility = Visibility.Visible;
+        }
+    }
+
+    private string BuildHeroTabHeader(string role, string position, int fallbackIndex)
+    {
+        var pick = _lineup.Picks.FirstOrDefault(value => value.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
+            ?? _lineup.Picks.ElementAtOrDefault(fallbackIndex);
+        if (pick is null)
+        {
+            return $"POS {position}";
+        }
+
+        return _isThai
+            ? $"{pick.Name} • {LocalizeRole(pick.Role)}"
+            : $"{pick.Name} • POS {position}";
     }
 
     private string LocalizeRole(string role)
@@ -216,9 +329,25 @@ public partial class AnalysisWindow : Window
         return element.TryGetProperty(propertyName, out var property) ? property.GetString() ?? string.Empty : string.Empty;
     }
 
-    private async void RetryButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadAnalysisAsync(false);
+    private async void AnalysisTabs_SelectionChanged(object sender, SelectionChangedEventArgs eventArgs)
+    {
+        if (!_initialized || !ReferenceEquals(sender, AnalysisTabs) || AnalysisTabs.SelectedIndex <= 0)
+        {
+            return;
+        }
 
-    private async void ReanalyzeButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadAnalysisAsync(true);
+        await LoadHeroTabAsync(AnalysisTabs.SelectedIndex, false);
+    }
+
+    private async void RetryButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadOverviewAsync(false);
+
+    private async void ReanalyzeButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadOverviewAsync(true);
+
+    private async void Pos1RetryButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadHeroTabAsync(1, true);
+
+    private async void Pos2RetryButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadHeroTabAsync(2, true);
+
+    private async void Pos5RetryButton_Click(object sender, RoutedEventArgs eventArgs) => await LoadHeroTabAsync(3, true);
 
     private void CloseButton_Click(object sender, RoutedEventArgs eventArgs) => Close();
 }

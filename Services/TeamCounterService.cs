@@ -304,7 +304,15 @@ public sealed class TeamCounterService
         };
 
         Exception? lastException = null;
-        foreach (var model in new[] { _config.Model, "gemini-flash-latest" }.Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var model in new[]
+                 {
+                     _config.Model,
+                     "gemini-3.7-flash",
+                     "gemini-3.6-flash",
+                     "gemini-3.5-flash",
+                     "gemini-3.5-flash-lite",
+                     "gemini-flash-latest"
+                 }.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             try
             {

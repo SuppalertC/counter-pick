@@ -112,15 +112,106 @@ public sealed partial class DotaAssetResolver
         }
     }
 
+    public async Task PopulateOverviewAssetsAsync(ComboAnalysis analysis, IReadOnlyList<LineupPick> lineup)
+    {
+        foreach (var pick in lineup)
+        {
+            pick.IconPath = ResolveHeroPath(pick.Hero);
+        }
+
+        var itemIcons = await EnsureItemIconsAsync(analysis.HeroItems
+            .SelectMany(heroItems => heroItems.Items)
+            .Select(item => item.ItemKey));
+        foreach (var heroItems in analysis.HeroItems)
+        {
+            heroItems.IconPath = ResolveHeroPath(heroItems.Hero);
+            heroItems.Hero = ResolveHeroName(heroItems.Hero);
+            foreach (var item in heroItems.Items)
+            {
+                item.IconPath = itemIcons.GetValueOrDefault(item.ItemKey, string.Empty);
+            }
+        }
+
+        foreach (var draftStep in analysis.DraftOrder)
+        {
+            draftStep.IconPath = ResolveHeroPath(draftStep.Hero);
+            draftStep.Hero = ResolveHeroName(draftStep.Hero);
+        }
+    }
+
+    public async Task PopulateHeroTabAssetsAsync(HeroTabAnalysis analysis)
+    {
+        var build = analysis.Build;
+        build.IconPath = ResolveHeroPath(build.Hero);
+        build.Hero = ResolveHeroName(build.Hero);
+        var itemIcons = await EnsureItemIconsAsync(build.Options
+            .SelectMany(option => option.Timings.Select(timing => timing.ItemKey)
+                .Concat(option.FinalItems.Select(item => item.ItemKey))));
+        foreach (var option in build.Options)
+        {
+            foreach (var timing in option.Timings)
+            {
+                timing.IconPath = itemIcons.GetValueOrDefault(timing.ItemKey, string.Empty);
+            }
+
+            foreach (var item in option.FinalItems)
+            {
+                item.IconPath = itemIcons.GetValueOrDefault(item.ItemKey, string.Empty);
+            }
+        }
+
+        var keyItem = build.Options
+            .SelectMany(option => option.Timings.Cast<object>().Concat(option.FinalItems))
+            .Select(value => value switch
+            {
+                ItemTiming timing => new { timing.ItemKey, timing.ItemName },
+                BuildItem item => new { item.ItemKey, item.ItemName },
+                _ => null
+            })
+            .FirstOrDefault(item => item is not null
+                && item.ItemKey.Equals(build.KeyItem, StringComparison.OrdinalIgnoreCase));
+        if (keyItem is not null)
+        {
+            build.KeyItem = keyItem.ItemName;
+        }
+
+        analysis.RolePlan.IconPath = ResolveHeroPath(analysis.RolePlan.Hero);
+        analysis.RolePlan.Hero = ResolveHeroName(analysis.RolePlan.Hero);
+        analysis.RolePlan.MapImagePath = AppPaths.Resolve(Path.Combine("assets", "map", "dota-map-current.png"));
+        analysis.RolePlan.Build = build;
+    }
+
+    private async Task<IReadOnlyDictionary<string, string>> EnsureItemIconsAsync(IEnumerable<string> itemKeys)
+    {
+        var uniqueKeys = itemKeys
+            .Where(key => !string.IsNullOrWhiteSpace(key))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var iconTasks = uniqueKeys.ToDictionary(
+            key => key,
+            EnsureItemIconAsync,
+            StringComparer.OrdinalIgnoreCase);
+        await Task.WhenAll(iconTasks.Values);
+        return iconTasks.ToDictionary(
+            pair => pair.Key,
+            pair => pair.Value.Result,
+            StringComparer.OrdinalIgnoreCase);
+    }
+
     private async Task<string> EnsureItemIconAsync(string itemKey)
     {
-        if (string.IsNullOrWhiteSpace(itemKey) || !SafeAssetKey().IsMatch(itemKey))
+        var assetKey = itemKey.ToLowerInvariant() switch
+        {
+            "daedalus" => "greater_crit",
+            _ => itemKey
+        };
+        if (string.IsNullOrWhiteSpace(assetKey) || !SafeAssetKey().IsMatch(assetKey))
         {
             return string.Empty;
         }
 
         Directory.CreateDirectory(_itemDirectory);
-        var path = Path.Combine(_itemDirectory, $"{itemKey}.png");
+        var path = Path.Combine(_itemDirectory, $"{assetKey}.png");
         if (File.Exists(path))
         {
             return path;
@@ -128,7 +219,7 @@ public sealed partial class DotaAssetResolver
 
         try
         {
-            var uri = $"https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/{itemKey}.png";
+            var uri = $"https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/{assetKey}.png";
             var bytes = await HttpClient.GetByteArrayAsync(uri);
             await File.WriteAllBytesAsync(path, bytes);
             return path;

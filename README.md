@@ -19,9 +19,11 @@ dotnet run
 - กด `เมนู` เพื่อเปิด **แผนสู้ฮีโร่เมตา**, **ค้นหาฮีโร่แก้ทาง**, อัปเดตข้อมูลทันที หรือตั้งค่าเปิดพร้อม Windows
 - ค่าเริ่มต้นเปิดเต็ม work area ของจอ 2 ที่ `864x1488` แต่สามารถลากย่อ–ขยายได้ ตารางและคอลัมน์จะปรับตามหน้าต่างอัตโนมัติ โดยตั้งค่าได้ผ่าน `targetScreen`, `fitToWorkArea` และ `lockSize` ใน JSON
 - ตารางยืดและหดตามความกว้างหน้าต่างอัตโนมัติ ค่า `width` ของแต่ละคอลัมน์ใน JSON ใช้เป็นสัดส่วนเทียบกับคอลัมน์อื่น
-- คลิก lineup เพื่อเปิด Gemini analysis card ซึ่งมี hero/item icons, build 2 ทางต่อฮีโร่, item timing, phase plan, counter แบบสั้น และ critical stage
+- ตารางหลักมี 14 ชุดสาย aggressive damage โดยทุกชุดจัดเป็น `Carry + Mid + Support`
+- คลิก lineup เพื่อเปิด Gemini analysis โดยโหลดเฉพาะ Overview ก่อน ซึ่งแสดงไอเทม 4 ชิ้นต่อฮีโร่ ลำดับการหยิบ และจุดที่ต้องระวัง
 - หน้า analysis ใช้แท็บชื่อฮีโร่จริง เช่น `Wraith King / Sniper / Venge` โดยแต่ละแท็บมี timeline, แผนที่ Dota 2 จากไฟล์เกมปัจจุบัน, จุดเกิด neutral camp ทั้งหมด, เส้นทางฟาร์ม Radiant/Dire 5 ช่วง และ checklist ไปต่อ/ยกเลิก 4 ข้อ
-- แถบหัวหน้าหลักและหน้า analysis แสดง tag เวอร์ชันแอปจาก assembly (`APP v1.3.2`) และ Dota patch ล่าสุดจาก Valve
+- แท็บฮีโร่ใช้ lazy loading: ถ้ายังไม่กดแท็บ แอปจะไม่เรียก Gemini และไม่โหลด build/แผนเดินเกมของฮีโร่ตัวนั้น
+- แถบหัวหน้าหลักและหน้า analysis แสดง tag เวอร์ชันแอปจาก assembly (`APP v1.3.3`) และ Dota patch ล่าสุดจาก Valve
 - หน้า **ค้นหาฮีโร่แก้ทาง** ใช้ธีมเดียวกับหน้าหลัก และโหมด `5v5 VERSUS` แสดงฮีโร่ครบทั้ง STR/AGI/INT/UNI พร้อมกัน 4 กลุ่มด้วยปุ่ม compact
 - ผล 5v5 ระบุว่าตัวแนะนำได้เปรียบศัตรูตัวใด พร้อมเปอร์เซ็นต์ เหตุผลเชิง mechanic แบบสั้น ปุ่มกลับไปเลือกฮีโร่ และทีมสวน 3 ชุด
 - ช่องค้นหาฮีโร่รองรับปุ่มค้นหา, Enter, ชื่อแบบเว้นวรรค/ขีด และแสดงจำนวนผลลัพธ์ทันที
@@ -31,10 +33,10 @@ dotnet run
 - เมนูหน้าหลัก **COMBO หลัก 3 ฮีโร่ / JSON** ใช้นำเข้า/ส่งออกเฉพาะชุด `Carry + Mid + Support` บนตารางหลัก ไม่รวมข้อมูลจาก Hero Counter หรือ 5v5
 - ไฟล์ Combo Pack ฝัง Dota patch และ generation prompt ไว้ใน JSON รองรับ append แบบข้ามชุดซ้ำ, replace พร้อม backup และเปิดอ่าน `board.json` เดิมได้
 - ปุ่ม `LANG: TH/EN` สลับภาษาของหน้าหลักและผลวิเคราะห์ Gemini โดยเริ่มต้นเป็นภาษาไทย ชื่อฮีโร่และไอเทมยังคงภาษาอังกฤษตามในเกม
-- Gemini ใช้ fixed system prompt และ fixed JSON schema ร่วมกับ lineup ที่เลือกทุกครั้ง โดยอ่าน `GEMINI_API_KEY` จาก `.env` ตอน runtime เท่านั้น
-- การวิเคราะห์แบ่งเป็น fixed JSON schema ขนาดเล็กสำหรับ strategy, item build และ role execution แล้วรวมผลก่อนแสดง; หากโมเดลหลักติด timeout/`429/5xx` แอปจะ retry และ fallback ไป Flash Lite
-- บริบทจะอ่าน patch ล่าสุดจาก Valve และ item popularity จาก OpenDota แล้ว cache ผลวิเคราะห์ไว้ใน `%LocalAppData%\DotaComboBoard\analysis-cache`
-- ปุ่มอัปเดตแพตช์และวิเคราะห์ใหม่บังคับดึง patch context ใหม่ ส่วนการเปิดปกติจะใช้ cache แยกตามภาษาเพื่อให้ครั้งถัดไปเร็วขึ้น
+- Gemini ใช้ fixed system prompt และ fixed JSON schema ร่วมกับ lineup ที่เลือกทุกครั้ง โดยอ่าน key จากหน้า Settings ก่อน แล้ว fallback ไป `GEMINI_API_KEY` ใน environment หรือ `.env`
+- การวิเคราะห์แบ่ง fixed JSON schema เป็น Overview และรายฮีโร่; หากโมเดลหลักติด timeout/`429/5xx` แอปจะสลับใช้โมเดล Flash สำรองอัตโนมัติ
+- บริบทอ่าน patch ล่าสุดจาก Valve และ item popularity จาก OpenDota พร้อม disk cache; หาก OpenDota ล่ม ระบบยังใช้ cache หรือ fallback item keys ต่อได้
+- ผล Overview และแท็บฮีโร่ cache แยกกันใน `%LocalAppData%\DotaComboBoard\analysis-cache` เพื่อให้เปิดครั้งถัดไปเร็วขึ้นและไม่โหลดแท็บที่ไม่ใช้
 - หน้า **แผนสู้ฮีโร่เมตา** อ่านฮีโร่ยอดนิยมจาก OpenDota รวม Underlord/Io ที่ติดตามไว้ แล้วคำนวณจาก matchup จริงว่าแผนใดใน `board.json` เหมาะที่สุด พร้อมแผนสำรอง
 - หน้า **ค้นหาฮีโร่แก้ทาง** แบ่งฮีโร่ครบ 127 ตัวตาม `STR / AGI / INT / UNI` มีช่องค้นหา และแสดงทั้งตัวที่เสียเปรียบ/ได้เปรียบ
 - ข้อมูล OpenDota ถูก cache 6 ชั่วโมงที่ `%LocalAppData%\DotaComboBoard\meta-cache` และใช้ cache เดิมต่อได้เมื่อบริการภายนอกชั่วคราวไม่พร้อม
