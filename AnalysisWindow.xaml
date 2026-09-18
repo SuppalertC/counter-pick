@@ -257,6 +257,13 @@
                                         <TextBlock x:Name="OverviewText" Margin="0,9,0,0" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
+                                <TextBlock x:Name="HowToPlayHeaderText" Style="{StaticResource SectionTitleStyle}" Text="HOW TO PLAY" />
+                                <UniformGrid Columns="2">
+                                    <Border Margin="0,0,5,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LanePhaseHeaderText" Text="LANE PHASE" FontWeight="Bold" /><TextBlock x:Name="LanePhaseText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="5,0,0,5" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="TeamFightHeaderText" Text="TEAM FIGHT" FontWeight="Bold" /><TextBlock x:Name="TeamFightText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="0,5,5,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="PickOffHeaderText" Text="PICK OFF" FontWeight="Bold" /><TextBlock x:Name="PickOffText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                    <Border Margin="5,5,0,0" Style="{StaticResource AnalysisCardStyle}"><StackPanel><TextBlock x:Name="LosingGameHeaderText" Text="LOSING GAME" FontWeight="Bold" /><TextBlock x:Name="LosingGameText" Margin="0,5,0,0" TextWrapping="Wrap" /></StackPanel></Border>
+                                </UniformGrid>
                                 <TextBlock x:Name="ItemsHeaderText" Style="{StaticResource SectionTitleStyle}" Text="HERO ITEMS" />
                                 <ItemsControl x:Name="HeroItemItems">
                                     <ItemsControl.ItemTemplate>
@@ -296,13 +303,27 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border Margin="0,0,0,8" Style="{StaticResource AnalysisCardStyle}" Padding="10">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="54" /><ColumnDefinition Width="54" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                                                    <Border Width="42" Height="42" Background="{StaticResource AccentBrush}" CornerRadius="21"><TextBlock Text="{Binding OrderDisplay}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White" /></Border>
-                                                    <Image Grid.Column="1" Width="46" Height="46" Source="{Binding IconPath}" Stretch="UniformToFill" />
-                                                    <TextBlock Grid.Column="2" Margin="9,0,0,0" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" />
-                                                    <StackPanel Grid.Column="3" VerticalAlignment="Center"><TextBlock Text="{Binding Reason}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding Caution, StringFormat='⚠ {0}'}" Foreground="{StaticResource AnalysisWarning}" FontSize="11" TextWrapping="Wrap" /></StackPanel>
-                                                </Grid>
+                                                <StackPanel>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="54" /><ColumnDefinition Width="54" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                        <Border Width="42" Height="42" Background="{StaticResource AccentBrush}" CornerRadius="21"><TextBlock Text="{Binding OrderDisplay}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White" /></Border>
+                                                        <Image Grid.Column="1" Width="46" Height="46" Source="{Binding IconPath}" Stretch="UniformToFill" />
+                                                        <TextBlock Grid.Column="2" Margin="9,0,0,0" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" />
+                                                        <StackPanel Grid.Column="3" VerticalAlignment="Center"><TextBlock Text="{Binding Reason}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding Caution, StringFormat='⚠ {0}'}" Foreground="{StaticResource AnalysisWarning}" FontSize="11" TextWrapping="Wrap" /></StackPanel>
+                                                    </Grid>
+                                                    <Border Margin="0,9,0,0" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="7" Padding="8">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="42" /><ColumnDefinition Width="125" /><ColumnDefinition Width="34" /><ColumnDefinition Width="42" /><ColumnDefinition Width="125" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                                            <TextBlock Text="IF" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" VerticalAlignment="Center" />
+                                                            <Image Grid.Column="1" Margin="8,0,0,0" Width="36" Height="36" Source="{Binding EnemyCounterIconPath}" Stretch="UniformToFill" />
+                                                            <TextBlock Grid.Column="2" Margin="8,0,0,0" Text="{Binding EnemyCounter}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                            <TextBlock Grid.Column="3" Text="→" Foreground="{StaticResource AccentBrush}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            <Image Grid.Column="4" Width="36" Height="36" Source="{Binding ResponseHeroIconPath}" Stretch="UniformToFill" />
+                                                            <TextBlock Grid.Column="5" Margin="8,0,0,0" Text="{Binding ResponseHero}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                            <TextBlock Grid.Column="6" Margin="8,0,0,0" Text="{Binding ResponseReason}" Foreground="{StaticResource SecondaryText}" FontSize="11" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                        </Grid>
+                                                    </Border>
+                                                </StackPanel>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -313,6 +334,47 @@
                                         <DataTemplate>
                                             <Border Margin="0,0,0,7" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="9" Padding="11">
                                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="26" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><TextBlock Text="!" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" /></Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="CountersHeaderText" Style="{StaticResource SectionTitleStyle}" Text="COUNTERS" />
+                                <ItemsControl x:Name="CounterItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,7" Style="{StaticResource AnalysisCardStyle}" Padding="10">
+                                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="46" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="38" Height="38" Source="{Binding IconPath}" Stretch="UniformToFill" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="Bold" /><StackPanel Grid.Column="2" VerticalAlignment="Center"><TextBlock Text="{Binding Threat}" FontSize="12" TextWrapping="Wrap" /><TextBlock Margin="0,2,0,0" Text="{Binding Response, StringFormat='→ {0}'}" FontSize="11" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel></Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="ReplacementHeaderText" Style="{StaticResource SectionTitleStyle}" Text="REPLACEMENTS" />
+                                <ItemsControl x:Name="ReplacementItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,8" Style="{StaticResource AnalysisCardStyle}">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal"><Image Width="36" Height="36" Source="{Binding OriginalHeroIconPath}" /><TextBlock Margin="9,0,0,0" Text="{Binding OriginalHero}" VerticalAlignment="Center" FontWeight="Bold" /></StackPanel>
+                                                    <ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Alternatives}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border Margin="0,0,0,5" Background="{StaticResource AnalysisCardRaised}" CornerRadius="6" Padding="8">
+                                                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="42" /><ColumnDefinition Width="145" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions><Image Width="34" Height="34" Source="{Binding IconPath}" /><TextBlock Grid.Column="1" Text="{Binding Hero}" VerticalAlignment="Center" FontWeight="SemiBold" /><TextBlock Grid.Column="2" Text="{Binding Reason}" VerticalAlignment="Center" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></Grid>
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="CriticalHeaderText" Style="{StaticResource SectionTitleStyle}" Foreground="{StaticResource AnalysisWarning}" Text="CRITICAL — DO NOT MISS" />
+                                <ItemsControl x:Name="CriticalItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,7" Background="#281A1A" BorderBrush="#58302C" BorderThickness="1" CornerRadius="9" Padding="11">
+                                                <StackPanel><TextBlock Text="{Binding Owner}" Foreground="{StaticResource AnalysisWarning}" FontWeight="Bold" /><TextBlock Margin="0,3,0,0" Text="{Binding Rule}" TextWrapping="Wrap" /><TextBlock Margin="0,3,0,0" Text="{Binding FailureImpactDisplay}" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" /></StackPanel>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

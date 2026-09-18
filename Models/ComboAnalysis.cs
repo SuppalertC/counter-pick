@@ -46,9 +46,18 @@ public sealed class DraftPickStep
     public string Hero { get; set; } = string.Empty;
     public string Reason { get; set; } = string.Empty;
     public string Caution { get; set; } = string.Empty;
+    public string EnemyCounter { get; set; } = string.Empty;
+    public string ResponseHero { get; set; } = string.Empty;
+    public string ResponseReason { get; set; } = string.Empty;
 
     [JsonIgnore]
     public string IconPath { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string EnemyCounterIconPath { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public string ResponseHeroIconPath { get; set; } = string.Empty;
 
     [JsonIgnore]
     public string OrderDisplay { get; set; } = string.Empty;

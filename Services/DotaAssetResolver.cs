@@ -136,6 +136,32 @@ public sealed partial class DotaAssetResolver
         {
             draftStep.IconPath = ResolveHeroPath(draftStep.Hero);
             draftStep.Hero = ResolveHeroName(draftStep.Hero);
+            draftStep.EnemyCounterIconPath = ResolveHeroPath(draftStep.EnemyCounter);
+            draftStep.EnemyCounter = ResolveHeroName(draftStep.EnemyCounter);
+            draftStep.ResponseHeroIconPath = ResolveHeroPath(draftStep.ResponseHero);
+            draftStep.ResponseHero = ResolveHeroName(draftStep.ResponseHero);
+        }
+
+        foreach (var counter in analysis.CounterHeroes)
+        {
+            counter.IconPath = ResolveHeroPath(counter.Hero);
+            counter.Hero = ResolveHeroName(counter.Hero);
+        }
+
+        foreach (var criticalStage in analysis.CriticalStages)
+        {
+            criticalStage.Owner = ResolveHeroName(criticalStage.Owner);
+        }
+
+        foreach (var replacement in analysis.Replacements)
+        {
+            replacement.OriginalHeroIconPath = ResolveHeroPath(replacement.OriginalHero);
+            replacement.OriginalHero = ResolveHeroName(replacement.OriginalHero);
+            foreach (var alternative in replacement.Alternatives)
+            {
+                alternative.IconPath = ResolveHeroPath(alternative.Hero);
+                alternative.Hero = ResolveHeroName(alternative.Hero);
+            }
         }
     }
 
@@ -203,6 +229,7 @@ public sealed partial class DotaAssetResolver
         var assetKey = itemKey.ToLowerInvariant() switch
         {
             "daedalus" => "greater_crit",
+            "aghanims_scepter" => "ultimate_scepter",
             _ => itemKey
         };
         if (string.IsNullOrWhiteSpace(assetKey) || !SafeAssetKey().IsMatch(assetKey))
@@ -250,7 +277,14 @@ public sealed partial class DotaAssetResolver
 
     private static string Normalize(string value)
     {
-        return new string(value.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
+        var normalized = new string(value.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
+        return normalized switch
+        {
+            "shaker" => "earthshaker",
+            "venge" => "vengefulspirit",
+            "od" => "outworlddestroyer",
+            _ => normalized
+        };
     }
 
     [GeneratedRegex("^[a-z0-9_]+$", RegexOptions.CultureInvariant)]

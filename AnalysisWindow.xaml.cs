@@ -60,6 +60,13 @@ public partial class AnalysisWindow : Window
             HeroItemItems.ItemsSource = analysis.HeroItems;
             DraftOrderItems.ItemsSource = analysis.DraftOrder.OrderBy(step => step.Order);
             DraftCautionItems.ItemsSource = analysis.DraftCautions;
+            LanePhaseText.Text = analysis.PhasePlan.LanePhase;
+            TeamFightText.Text = analysis.PhasePlan.TeamFight;
+            PickOffText.Text = analysis.PhasePlan.PickOff;
+            LosingGameText.Text = analysis.PhasePlan.LosingGame;
+            CounterItems.ItemsSource = analysis.CounterHeroes;
+            ReplacementItems.ItemsSource = analysis.Replacements;
+            CriticalItems.ItemsSource = analysis.CriticalStages;
             AnalysisTabs.SelectedItem = OverviewTab;
             LoadingPanel.Visibility = Visibility.Collapsed;
             AnalysisTabs.Visibility = Visibility.Visible;
@@ -124,14 +131,22 @@ public partial class AnalysisWindow : Window
         CloseButton.Content = _isThai ? "ปิด" : "CLOSE";
         LoadingTitleText.Text = _isThai ? "กำลังโหลด Overview..." : "LOADING OVERVIEW...";
         LoadingDetailText.Text = _isThai
-            ? "โหลดเฉพาะไอเทมและลำดับดราฟต์ • แท็บฮีโร่ยังไม่โหลด"
-            : "Items and draft order only • Hero tabs stay unloaded";
+            ? "แผนการเล่น • ไอเทม • ดราฟต์แก้ทาง • แท็บฮีโร่ยังไม่โหลด"
+            : "Strategy • items • adaptive draft • hero tabs stay unloaded";
         ErrorTitleText.Text = _isThai ? "วิเคราะห์ไม่สำเร็จ" : "ANALYSIS FAILED";
         RetryButton.Content = _isThai ? "ลองอีกครั้ง" : "TRY AGAIN";
         OverviewHeaderText.Text = _isThai ? "ภาพรวม" : "OVERVIEW";
+        HowToPlayHeaderText.Text = _isThai ? "แผนการเล่น" : "HOW TO PLAY";
+        LanePhaseHeaderText.Text = _isThai ? "ช่วงยืนเลน" : "LANE PHASE";
+        TeamFightHeaderText.Text = _isThai ? "ทีมไฟต์" : "TEAM FIGHT";
+        PickOffHeaderText.Text = _isThai ? "จับแยก" : "PICK OFF";
+        LosingGameHeaderText.Text = _isThai ? "เกมตาม" : "LOSING GAME";
         ItemsHeaderText.Text = _isThai ? "ไอเทมแนะนำของแต่ละฮีโร่" : "HERO ITEMS";
         DraftHeaderText.Text = _isThai ? "ลำดับการหยิบ" : "DRAFT PICK ORDER";
         CautionsHeaderText.Text = _isThai ? "จุดที่ต้องระวัง" : "DRAFT CAUTIONS";
+        CountersHeaderText.Text = _isThai ? "ตัวแก้ทาง" : "COUNTERS";
+        ReplacementHeaderText.Text = _isThai ? "ตัวเลือกทดแทน" : "REPLACEMENTS";
+        CriticalHeaderText.Text = _isThai ? "จุดสำคัญ — ห้ามพลาด" : "CRITICAL — DO NOT MISS";
         OverviewTab.Header = _isThai ? "ภาพรวม" : "OVERVIEW";
         Pos1Tab.Header = BuildHeroTabHeader("carry", "1", 0);
         Pos2Tab.Header = BuildHeroTabHeader("mid", "2", 1);
@@ -143,7 +158,7 @@ public partial class AnalysisWindow : Window
         DisclaimerText.Text = _isThai
             ? "Overview โหลดก่อน • ข้อมูลละเอียดของฮีโร่จะโหลดเมื่อกดแท็บนั้นเท่านั้น • AI อาจผิดพลาดได้"
             : "Overview loads first. Detailed hero data loads only when its tab is opened. AI can be wrong.";
-        ReanalyzeButton.Content = _isThai ? "อัปเดต Overview" : "REFRESH OVERVIEW";
+        ReanalyzeButton.Content = _isThai ? "อัปเดตแพตช์ + วิเคราะห์ใหม่" : "REFRESH PATCH + ANALYZE";
         ModelText.Text = _isThai
             ? "GEMINI FLASH • LAZY LOAD รายแท็บ • บริบทแพตช์ล่าสุด"
             : "GEMINI FLASH • LAZY TAB LOADING • LIVE PATCH CONTEXT";
@@ -163,6 +178,13 @@ public partial class AnalysisWindow : Window
         foreach (var draftStep in analysis.DraftOrder)
         {
             draftStep.OrderDisplay = draftStep.Order.ToString();
+        }
+
+        foreach (var criticalStage in analysis.CriticalStages)
+        {
+            criticalStage.FailureImpactDisplay = _isThai
+                ? $"พลาดแล้ว: {criticalStage.FailureImpact}"
+                : $"FAILURE: {criticalStage.FailureImpact}";
         }
     }
 

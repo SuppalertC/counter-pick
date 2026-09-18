@@ -10,14 +10,17 @@ namespace DotaComboBoard.Services;
 
 public sealed class GeminiAnalysisService
 {
-    private const string SchemaVersion = "v11-lazy-analysis-tabs";
+    private const string SchemaVersion = "v12-restored-overview-counter-draft";
     private const string OverviewPrompt = """
-        You are a current-patch Dota 2 drafting coach. Return only the compact overview requested by the exact JSON
-        schema. Use responseLanguage for explanations but keep canonical hero and item names in English. For each of
-        the three lineup heroes return exactly four practical items. Prefer itemKey values from currentItemPopularity;
-        when that source is empty, use only allowedFallbackItemKeys. Also return a realistic three-step draft pick
-        order from safest reveal to most important hero to hide, plus exactly three brief cautions. Never invent win
-        rates, patch changes, or numeric guarantees. Keep every explanation short and actionable.
+        You are a current-patch Dota 2 drafting coach. Restore the full strategic overview requested by the exact JSON
+        schema: lane phase, teamfight, pickoff, losing-game plan, four enemy counters, three critical rules, and three
+        replacement records with three alternatives each. Use responseLanguage for explanations but keep canonical
+        hero and item names in English. For each lineup hero return exactly four practical items. Prefer itemKey values
+        from currentItemPopularity; when that source is empty, use only allowedFallbackItemKeys. Return a realistic
+        three-step draft order from safest reveal to the core that should be hidden. Every draft step must name one
+        enemyCounter to watch and one responseHero of the same role to pick instead if that counter is revealed before
+        locking the planned hero; responseHero must differ from the planned hero. Also return exactly three brief draft
+        cautions. Never invent win rates, patch changes, or numeric guarantees. Keep explanations actionable and short.
         """;
     private const string HeroTabPrompt = """
         You are a current-patch Dota 2 item and execution coach. Analyze only targetHero and return the exact JSON
@@ -67,7 +70,7 @@ public sealed class GeminiAnalysisService
     [
         "magic_wand", "bracer", "wraith_band", "null_talisman", "bottle", "boots", "phase_boots",
         "power_treads", "arcane_boots", "travel_boots", "soul_ring", "armlet", "blink", "desolator", "black_king_bar",
-        "aghanims_scepter", "aghanims_shard", "assault", "bloodthorn", "greater_crit", "butterfly",
+        "ultimate_scepter", "aghanims_shard", "assault", "bloodthorn", "greater_crit", "butterfly",
         "manta", "satanic", "skadi", "diffusal_blade", "disperser", "orchid", "maelstrom", "radiance",
         "mjollnir", "gleipnir", "hurricane_pike", "dragon_lance", "shadow_blade", "silver_edge",
         "bfury", "mask_of_madness", "basher", "abyssal_blade", "harpoon", "heart", "sphere",
@@ -108,7 +111,7 @@ public sealed class GeminiAnalysisService
         var apiKey = GeminiApiKeyService.Resolve(_config)
             ?? throw new InvalidOperationException($"{_config.ApiKeyVariable} was not found in the environment or configured .env file.");
         Directory.CreateDirectory(Path.GetDirectoryName(cachePath)!);
-        var analysis = ParseResponse(await SendRequestAsync(
+        var analysis = ParseOverviewResponse(await SendRequestAsync(
             apiKey,
             CreateOverviewRequestBody(lineup, patchContext, responseLanguage),
             true));
@@ -331,9 +334,9 @@ public sealed class GeminiAnalysisService
         });
         return CreateStructuredRequest(
             OverviewPrompt,
-            $"Create the lightweight overview for this input JSON:\n{inputJson}",
+            $"Create the full overview and adaptive draft plan for this input JSON:\n{inputJson}",
             CreateOverviewSchema(),
-            3500);
+            6500);
     }
 
     private static object CreateHeroTabRequestBody(
@@ -470,6 +473,12 @@ public sealed class GeminiAnalysisService
             },
             required = new[] { "itemKey", "itemName", "reason" }
         };
+        var replacementOption = new
+        {
+            type = "OBJECT",
+            properties = new { hero = new { type = "STRING" }, reason = new { type = "STRING" } },
+            required = new[] { "hero", "reason" }
+        };
         return new
         {
             type = "OBJECT",
@@ -506,9 +515,15 @@ public sealed class GeminiAnalysisService
                             order = new { type = "INTEGER" },
                             hero = new { type = "STRING" },
                             reason = new { type = "STRING" },
-                            caution = new { type = "STRING" }
+                            caution = new { type = "STRING" },
+                            enemyCounter = new { type = "STRING" },
+                            responseHero = new { type = "STRING" },
+                            responseReason = new { type = "STRING" }
                         },
-                        required = new[] { "order", "hero", "reason", "caution" }
+                        required = new[]
+                        {
+                            "order", "hero", "reason", "caution", "enemyCounter", "responseHero", "responseReason"
+                        }
                     }
                 },
                 draftCautions = new
@@ -517,9 +532,81 @@ public sealed class GeminiAnalysisService
                     minItems = 3,
                     maxItems = 3,
                     items = new { type = "STRING" }
+                },
+                phasePlan = new
+                {
+                    type = "OBJECT",
+                    properties = new
+                    {
+                        lanePhase = new { type = "STRING" },
+                        teamFight = new { type = "STRING" },
+                        pickOff = new { type = "STRING" },
+                        losingGame = new { type = "STRING" }
+                    },
+                    required = new[] { "lanePhase", "teamFight", "pickOff", "losingGame" }
+                },
+                counterHeroes = new
+                {
+                    type = "ARRAY",
+                    minItems = 4,
+                    maxItems = 4,
+                    items = new
+                    {
+                        type = "OBJECT",
+                        properties = new
+                        {
+                            hero = new { type = "STRING" },
+                            threat = new { type = "STRING" },
+                            response = new { type = "STRING" }
+                        },
+                        required = new[] { "hero", "threat", "response" }
+                    }
+                },
+                criticalStages = new
+                {
+                    type = "ARRAY",
+                    minItems = 3,
+                    maxItems = 3,
+                    items = new
+                    {
+                        type = "OBJECT",
+                        properties = new
+                        {
+                            owner = new { type = "STRING" },
+                            rule = new { type = "STRING" },
+                            failureImpact = new { type = "STRING" }
+                        },
+                        required = new[] { "owner", "rule", "failureImpact" }
+                    }
+                },
+                replacements = new
+                {
+                    type = "ARRAY",
+                    minItems = 3,
+                    maxItems = 3,
+                    items = new
+                    {
+                        type = "OBJECT",
+                        properties = new
+                        {
+                            originalHero = new { type = "STRING" },
+                            alternatives = new
+                            {
+                                type = "ARRAY",
+                                minItems = 3,
+                                maxItems = 3,
+                                items = replacementOption
+                            }
+                        },
+                        required = new[] { "originalHero", "alternatives" }
+                    }
                 }
             },
-            required = new[] { "overview", "heroItems", "draftOrder", "draftCautions" }
+            required = new[]
+            {
+                "overview", "heroItems", "draftOrder", "draftCautions", "phasePlan", "counterHeroes",
+                "criticalStages", "replacements"
+            }
         };
     }
 
@@ -784,6 +871,29 @@ public sealed class GeminiAnalysisService
     {
         return JsonSerializer.Deserialize<ComboAnalysis>(ExtractResponseText(responseJson), JsonOptions)
             ?? throw new InvalidOperationException("Gemini returned invalid analysis JSON.");
+    }
+
+    private static ComboAnalysis ParseOverviewResponse(string responseJson)
+    {
+        var analysis = ParseResponse(responseJson);
+        var hasInvalidDraft = analysis.DraftOrder.Count != 3
+            || analysis.DraftOrder.Any(step =>
+                step.Order is < 1 or > 3
+                || string.IsNullOrWhiteSpace(step.Hero)
+                || string.IsNullOrWhiteSpace(step.EnemyCounter)
+                || string.IsNullOrWhiteSpace(step.ResponseHero)
+                || step.Hero.Equals(step.ResponseHero, StringComparison.OrdinalIgnoreCase));
+        if (analysis.HeroItems.Count != 3
+            || analysis.HeroItems.Any(hero => hero.Items.Count != 4)
+            || hasInvalidDraft
+            || analysis.CounterHeroes.Count != 4
+            || analysis.CriticalStages.Count != 3
+            || analysis.Replacements.Count != 3)
+        {
+            throw new InvalidOperationException("Gemini returned an incomplete overview or adaptive draft plan.");
+        }
+
+        return analysis;
     }
 
     private static HeroTabAnalysis ParseHeroTabResponse(string responseJson)

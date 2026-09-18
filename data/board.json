@@ -159,6 +159,106 @@
         ]},
         "detail": { "specialty": "🌑 Global Lockdown", "specialtyTh": "🌑 ล็อกไฟต์ทั่วแมพ", "winCondition": "Puck starts the fight, Spectre jumps the exposed backline, and Global Silence removes counterplay.", "winConditionTh": "Puck เปิดไฟต์, Spectre กระโดดใส่แนวหลังที่เปิดช่อง และ Global Silence ปิดการสวน" }
       }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌀 Illusion Backline Crush", "specialtyTh": "🌀 ภาพลวงพังแนวหลัง", "winCondition": "Ember and Phantom Lancer split the fight while Disruptor traps the real target inside Static Storm.", "winConditionTh": "Ember กับ Phantom Lancer แยกแนวไฟต์ แล้ว Disruptor ขังเป้าจริงใน Static Storm" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+          { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+          { "hero": "lich", "name": "Lich", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🧠 Mana Collapse", "specialtyTh": "🧠 เจาะมานาพังไฟต์", "winCondition": "Lich slows the formation, Phantom Lancer drains resources, and Outworld Destroyer deletes the isolated core.", "winConditionTh": "Lich ชะลอแนวทีม, Phantom Lancer เผาทรัพยากร แล้ว Outworld Destroyer ลบ core ที่ถูกแยก" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "sven", "name": "Sven", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "bounty_hunter", "name": "Bounty Hunter", "role": "Support" }
+        ]},
+        "detail": { "specialty": "💰 Track Cleave Burst", "specialtyTh": "💰 Track แล้วฟันแตก", "winCondition": "Track exposes the target, Invoker controls the escape, and Sven cleaves through the grouped defense.", "winConditionTh": "Track เปิดเป้า, Invoker ปิดทางหนี แล้ว Sven ฟัน cleave ทะลุแนวรับที่ยืนรวม" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "sven", "name": "Sven", "role": "Carry" },
+          { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+          { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🔨 Triple Lock Burst", "specialtyTh": "🔨 ล็อกสามชั้นระเบิดเป้า", "winCondition": "Hex starts the catch, Astral controls the save, and Sven lands the finishing stun and burst.", "winConditionTh": "Hex เปิดจับ, Astral คุมจังหวะช่วย แล้ว Sven ลงสตันและระเบิดปิดเป้า" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
+          { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+          { "hero": "spirit_breaker", "name": "Spirit Breaker", "role": "Support" }
+        ]},
+        "detail": { "specialty": "☄ Charge Into Omnislash", "specialtyTh": "☄ พุ่งเปิดแล้ว Omnislash", "winCondition": "Spirit Breaker forces a scattered fight, Outworld Destroyer removes the save, and Juggernaut executes the exposed target.", "winConditionTh": "Spirit Breaker บังคับไฟต์แตก, Outworld Destroyer เอาตัวช่วยออก แล้ว Juggernaut ปิดเป้าที่เปิดช่อง" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "spirit_breaker", "name": "Spirit Breaker", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚡ Double Global Dive", "specialtyTh": "⚡ พุ่งล้วงสองชั้น", "winCondition": "Spirit Breaker and Storm Spirit collapse on the backline while Wraith King occupies every frontline response.", "winConditionTh": "Spirit Breaker กับ Storm Spirit รุมแนวหลัง ส่วน Wraith King ดึงการตอบโต้ทั้งหมดไว้หน้าไฟต์" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "drow_ranger", "name": "Drow Ranger", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "bounty_hunter", "name": "Bounty Hunter", "role": "Support" }
+        ]},
+        "detail": { "specialty": "👁 Vision Volley", "specialtyTh": "👁 เปิดวิสัยทัศน์แล้วยิงแตก", "winCondition": "Track and Zeus reveal every flank so Drow can focus the weakest target before enemies close the gap.", "winConditionTh": "Track กับ Zeus เปิดทุกมุมล้วง ให้ Drow ยิงเป้าที่บางที่สุดก่อนศัตรูเข้าถึงตัว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "bounty_hunter", "name": "Bounty Hunter", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌐 Tracked Global Hunt", "specialtyTh": "🌐 Track แล้วล่าทั่วแมพ", "winCondition": "Bounty Hunter marks isolated heroes, Invoker starts from range, and Spectre arrives instantly to secure the kill.", "winConditionTh": "Bounty Hunter มาร์กตัวแยก, Invoker เปิดจากไกล แล้ว Spectre เข้าถึงทันทีเพื่อปิดคิล" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "luna", "name": "Luna", "role": "Carry" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌙 Eclipse Objective Rush", "specialtyTh": "🌙 Eclipse แล้วเร่งป้อม", "winCondition": "Ember cuts reinforcements, Shadow Shaman locks one hero, and Luna converts Eclipse kills into fast objectives.", "winConditionTh": "Ember ตัดกำลังเสริม, Shadow Shaman ล็อกหนึ่งตัว แล้ว Luna เปลี่ยนคิลจาก Eclipse เป็น Objective เร็ว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "life_stealer", "name": "Lifestealer", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "spirit_breaker", "name": "Spirit Breaker", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🚀 Infest Dive Chain", "specialtyTh": "🚀 Infest พุ่งล้วงต่อเนื่อง", "winCondition": "Lifestealer rides the first dive, Storm Spirit catches the backline, and Spirit Breaker extends the chain stun.", "winConditionTh": "Lifestealer ซ่อนในตัวเปิด, Storm Spirit จับแนวหลัง แล้ว Spirit Breaker ต่อสตันไม่ให้หนี" }
+      }
     }
   ]
 }
