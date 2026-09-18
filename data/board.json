@@ -259,6 +259,366 @@
         ]},
         "detail": { "specialty": "🚀 Infest Dive Chain", "specialtyTh": "🚀 Infest พุ่งล้วงต่อเนื่อง", "winCondition": "Lifestealer rides the first dive, Storm Spirit catches the backline, and Spirit Breaker extends the chain stun.", "winConditionTh": "Lifestealer ซ่อนในตัวเปิด, Storm Spirit จับแนวหลัง แล้ว Spirit Breaker ต่อสตันไม่ให้หนี" }
       }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "faceless_void", "name": "Faceless Void", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "witch_doctor", "name": "Witch Doctor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🕳 Classic Chrono Cataclysm", "specialtyTh": "🕳 Chrono + Cataclysm คลาสสิก", "winCondition": "Chronosphere locks the formation while Cataclysm and Death Ward deal damage safely from outside.", "winConditionTh": "Chronosphere ล็อกแนวศัตรู แล้ว Cataclysm กับ Death Ward ทำดาเมจจากนอกวง" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "faceless_void", "name": "Faceless Void", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "lich", "name": "Lich", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚡ Chrono Magic Barrage", "specialtyTh": "⚡ ขังวงแล้วยิงเวท", "winCondition": "Faceless Void isolates multiple heroes so Zeus and Lich can unload area damage without being interrupted.", "winConditionTh": "Faceless Void ขังหลายตัว ให้ Zeus กับ Lich เทดาเมจพื้นที่โดยไม่ถูกขัด" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "faceless_void", "name": "Faceless Void", "role": "Carry" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⏳ Time Lock Zone", "specialtyTh": "⏳ ล็อกเวลาซ้อนพื้นที่", "winCondition": "Ember pressures the edges, Disruptor blocks escape, and Faceless Void commits Chronosphere on the trapped core.", "winConditionTh": "Ember กดขอบไฟต์, Disruptor ปิดทางหนี แล้ว Faceless Void ลง Chronosphere ใส่ core ที่ติดกับ" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "medusa", "name": "Medusa", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "keeper_of_the_light", "name": "Keeper of the Light", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🔋 Mana Fortress", "specialtyTh": "🔋 ป้อมมานาดันไฟต์", "winCondition": "Chakra sustains Medusa and Invoker while Stone Gaze creates room for the full spell sequence.", "winConditionTh": "Chakra เติมมานาให้ Medusa กับ Invoker และ Stone Gaze เปิดพื้นที่ให้ลงสกิลครบชุด" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "medusa", "name": "Medusa", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🐍 Static Stone Siege", "specialtyTh": "🐍 หินจ้องซ้อน Static Storm", "winCondition": "Static Storm forces enemies together, Zeus lowers everyone, and Medusa finishes the locked formation.", "winConditionTh": "Static Storm บีบศัตรูยืนรวม, Zeus ลดเลือดทั้งทีม แล้ว Medusa ยิงปิดแนวที่ถูกล็อก" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "antimage", "name": "Anti-Mage", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+        ]},
+        "detail": { "specialty": "✂ Split Push Catch", "specialtyTh": "✂ แยกดันแล้วจับคนแก้", "winCondition": "Anti-Mage forces map splits while Puck and Shadow Shaman catch anyone sent alone to defend.", "winConditionTh": "Anti-Mage บังคับศัตรูแยกแก้ทาง แล้ว Puck กับ Shadow Shaman จับคนที่มาคนเดียว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "antimage", "name": "Anti-Mage", "role": "Carry" },
+          { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🗺 Double Split Pressure", "specialtyTh": "🗺 แยกกดดันสองฝั่ง", "winCondition": "Ember cuts dangerous waves, Venge saves the first jump, and Anti-Mage punishes every forced rotation.", "winConditionTh": "Ember ตัดเวฟอันตราย, Venge ช่วยจังหวะกระโดดแรก แล้ว Anti-Mage ลงโทษทุกการวาร์ปแก้" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "phantom_assassin", "name": "Phantom Assassin", "role": "Carry" },
+          { "hero": "magnataur", "name": "Magnus", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🗡 Empower Crit Burst", "specialtyTh": "🗡 Empower แล้วคริติคอลแตก", "winCondition": "Empower accelerates Phantom Assassin, Venge amplifies physical damage, and Reverse Polarity guarantees the jump.", "winConditionTh": "Empower เร่ง Phantom Assassin, Venge เพิ่มดาเมจกายภาพ และ Reverse Polarity ล็อกให้กระโดดปิด" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "phantom_assassin", "name": "Phantom Assassin", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "bounty_hunter", "name": "Bounty Hunter", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🎯 Tracked Coup de Grace", "specialtyTh": "🎯 Track แล้วกระโดดคริ", "winCondition": "Track reveals the weakest support, Puck blocks escape, and Phantom Assassin deletes the marked target.", "winConditionTh": "Track เปิดซัพพอร์ตที่บางที่สุด, Puck ปิดทางหนี แล้ว Phantom Assassin กระโดดลบเป้า" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "ursa", "name": "Ursa", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🐻 Classic Hex Roshan", "specialtyTh": "🐻 Hex ฆ่าเร็วแล้ว Roshan", "winCondition": "Puck finds the target, Shadow Shaman holds it still, and Ursa converts the kill into an early Roshan.", "winConditionTh": "Puck หาเป้า, Shadow Shaman ล็อกให้นิ่ง แล้ว Ursa เปลี่ยนคิลเป็น Roshan เร็ว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "ursa", "name": "Ursa", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "lich", "name": "Lich", "role": "Support" }
+        ]},
+        "detail": { "specialty": "❄ Burst Chase", "specialtyTh": "❄ สโลว์แล้วไล่ระเบิด", "winCondition": "Lich slows the target, Zeus removes hiding spots, and Ursa stacks Fury Swipes without losing contact.", "winConditionTh": "Lich สโลว์เป้า, Zeus เปิดจุดซ่อน แล้ว Ursa ซ้อน Fury Swipes โดยไม่หลุดระยะ" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "slark", "name": "Slark", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🖋 Ink Pounce Aggression", "specialtyTh": "🖋 Ink Swell พุ่งกัด", "winCondition": "Ink Swell rides Slark into the target, Puck chains the control, and Essence Shift wins the extended fight.", "winConditionTh": "Ink Swell ติด Slark พุ่งเข้าเป้า, Puck ต่อคอนโทรล แล้ว Essence Shift ชนะไฟต์ยาว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "slark", "name": "Slark", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌩 Mobile Hunt Lock", "specialtyTh": "🌩 ไล่ล่าล็อกเป้าเคลื่อนที่", "winCondition": "Storm and Slark chase across terrain while Disruptor returns escaping heroes into the kill zone.", "winConditionTh": "Storm กับ Slark ไล่ข้ามพื้นที่ ส่วน Disruptor ดึงคนหนีกลับเข้าพื้นที่ฆ่า" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "drow_ranger", "name": "Drow Ranger", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "witch_doctor", "name": "Witch Doctor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "☠ Maledict Volley", "specialtyTh": "☠ Maledict แล้วยิงซ้ำ", "winCondition": "Maledict punishes every damage instance while Zeus and Drow repeatedly hit the same controlled target.", "winConditionTh": "Maledict ลงโทษทุกดาเมจซ้ำ แล้ว Zeus กับ Drow โฟกัสยิงเป้าเดียวที่ถูกคุม" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "nevermore", "name": "Shadow Fiend", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "bane", "name": "Bane", "role": "Support" }
+        ]},
+        "detail": { "specialty": "😴 Nightmare Requiem", "specialtyTh": "😴 Nightmare จัดระยะ Requiem", "winCondition": "Bane isolates and positions the victim, Puck stops help, and Shadow Fiend lands the full burst sequence.", "winConditionTh": "Bane แยกและจัดตำแหน่งเหยื่อ, Puck กันตัวช่วย แล้ว Shadow Fiend ลงคอมโบเต็มชุด" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "muerta", "name": "Muerta", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "wisp", "name": "Io", "role": "Support" }
+        ]},
+        "detail": { "specialty": "👻 Tethered Pierce Dive", "specialtyTh": "👻 Tether ยิงทะลุไล่ล้วง", "winCondition": "Io sustains Muerta's attack window while Storm Spirit catches heroes trying to disengage.", "winConditionTh": "Io ประคองช่วงยิงของ Muerta ส่วน Storm Spirit จับคนที่พยายามถอนจากไฟต์" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "marci", "name": "Marci", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "wisp", "name": "Io", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🤝 Tether Unleash", "specialtyTh": "🤝 Tether เร่ง Unleash", "winCondition": "Io keeps Marci attacking through focus fire while Invoker controls the space around her target.", "winConditionTh": "Io ช่วยให้ Marci ต่อยต่อแม้โดนโฟกัส ส่วน Invoker คุมพื้นที่รอบเป้าหมาย" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "weaver", "name": "Weaver", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🪲 Bug Ink Silence", "specialtyTh": "🪲 แมลงซ้อนหมึกปิดสกิล", "winCondition": "The Swarm and Phantom's Embrace overload dispels while Puck prevents the target from escaping Weaver.", "winConditionTh": "The Swarm กับ Phantom's Embrace บังคับศัตรูแก้ดีบัฟหลายชั้น และ Puck กันไม่ให้หนี Weaver" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "life_stealer", "name": "Lifestealer", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🖤 Ink Infest Bomb", "specialtyTh": "🖤 Ink Swell ซ้อน Infest", "winCondition": "Lifestealer carries Ink Swell into the backline, Puck locks the retreat, and Infest resets the dive.", "winConditionTh": "Lifestealer พา Ink Swell เข้าหลังบ้าน, Puck ปิดทางถอย แล้ว Infest รีเซ็ตการล้วง" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "chaos_knight", "name": "Chaos Knight", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🎭 Soulbind Reality Rift", "specialtyTh": "🎭 Soulbind ซ้อน Reality Rift", "winCondition": "Soulbind doubles the catch, Invoker adds area control, and Chaos Knight erases both linked targets.", "winConditionTh": "Soulbind ทำให้จับสองเป้า, Invoker เติมคอนโทรลพื้นที่ แล้ว Chaos Knight ลบทั้งคู่" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "chaos_knight", "name": "Chaos Knight", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚫ Soulbind Vortex", "specialtyTh": "⚫ Soulbind ดึงสองเป้า", "winCondition": "Storm initiates on the linked pair, Grimstroke extends the disable, and Chaos Knight supplies the physical burst.", "winConditionTh": "Storm เปิดใส่คู่ที่ถูกลิงก์, Grimstroke ต่อสถานะ แล้ว Chaos Knight เติมดาเมจกายภาพ" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "bloodseeker", "name": "Bloodseeker", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🩸 Thirst Swap Chase", "specialtyTh": "🩸 เปิด Thirst แล้ว Swap ไล่ฆ่า", "winCondition": "Zeus activates Thirst across the map, Venge repositions the victim, and Bloodseeker finishes the chase.", "winConditionTh": "Zeus เปิด Thirst ทั่วแมพ, Venge สลับตำแหน่งเหยื่อ แล้ว Bloodseeker วิ่งปิดคิล" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "keeper_of_the_light", "name": "Keeper of the Light", "role": "Support" }
+        ]},
+        "detail": { "specialty": "✨ Endless Lance Tempo", "specialtyTh": "✨ เติมมานา Lance ไม่หยุด", "winCondition": "Chakra keeps Phantom Lancer pressuring with Spirit Lance while Invoker punishes the distracted formation.", "winConditionTh": "Chakra เติมให้ Phantom Lancer ปา Spirit Lance ต่อเนื่อง และ Invoker ลงโทษแนวที่เสียรูป" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "terrorblade", "name": "Terrorblade", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "keeper_of_the_light", "name": "Keeper of the Light", "role": "Support" }
+        ]},
+        "detail": { "specialty": "☀ Metamorphosis Reset", "specialtyTh": "☀ เติมจังหวะ Metamorphosis", "winCondition": "Keeper sustains repeated spells, Invoker controls the approach, and Terrorblade sieges during Metamorphosis.", "winConditionTh": "Keeper เติมการใช้สกิล, Invoker คุมทางเข้า แล้ว Terrorblade ล้อมป้อมช่วง Metamorphosis" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌀 Ink Spin Entry", "specialtyTh": "🌀 Ink Swell ซ้อน Blade Fury", "winCondition": "Juggernaut carries Ink Swell through spells, Invoker separates the save, and Omnislash finishes the isolated target.", "winConditionTh": "Juggernaut พา Ink Swell ฝ่าสกิล, Invoker แยกตัวช่วย แล้ว Omnislash ปิดเป้าเดี่ยว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "sven", "name": "Sven", "role": "Carry" },
+          { "hero": "magnataur", "name": "Magnus", "role": "Mid" },
+          { "hero": "wisp", "name": "Io", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🔨 Empower Tether Cleave", "specialtyTh": "🔨 Empower + Tether ฟันหมู่", "winCondition": "Magnus groups the targets, Io keeps Sven attacking, and God's Strength cleaves through the entire cluster.", "winConditionTh": "Magnus รวมเป้า, Io ประคองให้ Sven ตีต่อ แล้ว God's Strength ฟัน cleave ทั้งกลุ่ม" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "troll_warlord", "name": "Troll Warlord", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🪓 Alacrity Battle Trance", "specialtyTh": "🪓 Alacrity เร่ง Battle Trance", "winCondition": "Alacrity and Venge's aura accelerate Troll while Swap prevents the target from escaping his attack range.", "winConditionTh": "Alacrity กับออร่า Venge เร่ง Troll และ Swap กันเป้าหลุดระยะตี" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "gyrocopter", "name": "Gyrocopter", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "wisp", "name": "Io", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🚁 Classic Tether Flak", "specialtyTh": "🚁 Tether เร่ง Flak Cannon", "winCondition": "Io sustains Gyrocopter in the center while Zeus and Flak Cannon damage every visible enemy.", "winConditionTh": "Io ประคอง Gyrocopter กลางไฟต์ ส่วน Zeus กับ Flak Cannon ทำดาเมจทุกตัวที่เห็น" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "tiny", "name": "Tiny", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "wisp", "name": "Io", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🪨 Classic Relocate Burst", "specialtyTh": "🪨 Relocate ระเบิดเป้าคลาสสิก", "winCondition": "Io delivers Tiny onto the target, Invoker blocks counterplay, and the Avalanche Toss burst starts a fast objective.", "winConditionTh": "Io ส่ง Tiny ถึงเป้า, Invoker ปิดการสวน แล้ว Avalanche Toss เปิดทางตี Objective เร็ว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "naga_siren", "name": "Naga Siren", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🎵 Song Static Setup", "specialtyTh": "🎵 Song จัดวง Static Storm", "winCondition": "Song of the Siren positions the enemy team for Static Storm and Invoker's full area combo.", "winConditionTh": "Song of the Siren จัดตำแหน่งทั้งทีมศัตรูให้ Static Storm และคอมโบพื้นที่ Invoker" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "morphling", "name": "Morphling", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌊 Waveform Swap Burst", "specialtyTh": "🌊 Waveform ซ้อน Swap", "winCondition": "Puck starts the catch, Venge places the victim in range, and Morphling unloads the adaptive burst.", "winConditionTh": "Puck เปิดจับ, Venge วางเหยื่อเข้าระยะ แล้ว Morphling เทดาเมจ adaptive ปิด" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "riki", "name": "Riki", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "disruptor", "name": "Disruptor", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🌫 Smoke Static Trap", "specialtyTh": "🌫 ควันซ้อน Static Storm", "winCondition": "Puck catches first, Disruptor seals the area, and Riki prevents casting while finishing the trapped support.", "winConditionTh": "Puck จับก่อน, Disruptor ปิดพื้นที่ แล้ว Riki ปิดสกิลและฆ่าซัพพอร์ตในกับดัก" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "razor", "name": "Razor", "role": "Carry" },
+          { "hero": "storm_spirit", "name": "Storm Spirit", "role": "Mid" },
+          { "hero": "lich", "name": "Lich", "role": "Support" }
+        ]},
+        "detail": { "specialty": "⚙ Link Chase Control", "specialtyTh": "⚙ Static Link ไล่กด core", "winCondition": "Storm catches the enemy core, Lich slows every exit, and Razor maintains Static Link until the fight collapses.", "winConditionTh": "Storm จับ core ศัตรู, Lich สโลว์ทุกทางออก แล้ว Razor ต่อ Static Link จนไฟต์แตก" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "monkey_king", "name": "Monkey King", "role": "Carry" },
+          { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+          { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🐒 Wukong Control Ring", "specialtyTh": "🐒 คุมวง Wukong's Command", "winCondition": "Invoker controls the circle, Venge swaps targets back inside, and Monkey King dominates the fixed area.", "winConditionTh": "Invoker คุมพื้นที่วง, Venge Swap เป้ากลับเข้า แล้ว Monkey King ครองพื้นที่ตายตัว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "alchemist", "name": "Alchemist", "role": "Carry" },
+          { "hero": "puck", "name": "Puck", "role": "Mid" },
+          { "hero": "ancient_apparition", "name": "Ancient Apparition", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🧪 Acid Anti-Heal Rush", "specialtyTh": "🧪 กรดตัดฮีลเร่งเกม", "winCondition": "Puck groups the fight, Ice Blast removes recovery, and Alchemist fights early with a faster item lead.", "winConditionTh": "Puck รวมไฟต์, Ice Blast ตัดการฟื้นฟู แล้ว Alchemist ใช้ไอเทมนำเข้าชนเร็ว" }
+      }
+    },
+    {
+      "cells": {
+        "pick": { "picks": [
+          { "hero": "clinkz", "name": "Clinkz", "role": "Carry" },
+          { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+          { "hero": "bounty_hunter", "name": "Bounty Hunter", "role": "Support" }
+        ]},
+        "detail": { "specialty": "🏹 Double Vision Assassination", "specialtyTh": "🏹 เปิดวิสัยทัศน์ลอบยิง", "winCondition": "Track and Zeus expose isolated heroes so Clinkz can enter unseen and burst the correct target.", "winConditionTh": "Track กับ Zeus เปิดฮีโร่ที่แยก ให้ Clinkz เข้าลับและระเบิดเป้าถูกตัว" }
+      }
     }
   ]
 }
