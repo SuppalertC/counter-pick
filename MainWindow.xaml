@@ -61,6 +61,7 @@
                         <TextBlock x:Name="AppVersionTagText" Style="{StaticResource VersionTagTextStyle}" />
                     </Border>
                     <Button x:Name="RankModeButton" Margin="6,0,0,0" Style="{StaticResource RankTagButtonStyle}" Click="RankModeButton_Click" />
+                    <Button x:Name="WebSyncButton" Margin="6,0,0,0" Style="{StaticResource RankTagButtonStyle}" Foreground="#6EB8FF" Click="WebSyncButton_Click" />
                     <Border Margin="6,0,0,0" Style="{StaticResource VersionTagStyle}">
                         <TextBlock x:Name="DotaPatchTagText" Style="{StaticResource VersionTagTextStyle}" Foreground="#F4C46A" />
                     </Border>

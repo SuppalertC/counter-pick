@@ -21,6 +21,8 @@ dotnet run
 - ตารางยืดและหดตามความกว้างหน้าต่างอัตโนมัติ ค่า `width` ของแต่ละคอลัมน์ใน JSON ใช้เป็นสัดส่วนเทียบกับคอลัมน์อื่น
 - ตารางหลักมี 60 ชุด `Carry + Mid + Support` ครอบคลุม aggressive meta, global hunt, split push, teamfight wombo และคอมโบคลาสสิกที่ชุมชนผู้เล่นนิยมแชร์กัน
 - tag ข้าง `APP v1.3.3` สลับข้อมูล `COMBO: ALL → RANK: ARCHON → RANK: LEGEND` โดยมีชุดคัดจาก core/support win rate สูงอย่างละ 10 ทีมสำหรับ Archon และ Legend
+- tag `WEB: WAITING/LINKED` เปิดหน้าค้นเว็บสาธารณะผ่าน Chrome Extension โดยจับคู่ด้วยรหัส 6 หลักและส่งข้อมูลผ่าน WebSocket เฉพาะเครื่องที่ `127.0.0.1:37821`
+- ติดตั้ง extension แบบ unpacked จากโฟลเดอร์ `chrome-extension` ตาม `chrome-extension/README.md`; ระบบไม่ควบคุม ChatGPT และไม่อ่าน cookie/session ของเบราว์เซอร์
 - หน้าต่างหลักเกิดและเปิดกลับที่ขอบซ้ายบนของ work area บนจอ `targetScreen` เสมอ
 - คลิก lineup เพื่อเปิด Gemini analysis แบบหน้า `v1.3.2` ซึ่งมี phase plan, counters, replacements และ critical stage กลับมาครบ พร้อมไอเทม 4 ชิ้นต่อฮีโร่
 - ลำดับดราฟต์แสดง counter ที่ต้องระวังในแต่ละ pick และฮีโร่ตำแหน่งเดียวกันที่ควรเปลี่ยนหยิบตอบโต้หากศัตรูเปิดตัวแก้ทางก่อน

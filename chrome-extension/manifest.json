@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Dota Combo Board Web Sync",
+  "version": "1.0.0",
+  "description": "Sync public Dota 2 web searches with the Dota Combo Board Windows app.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.bing.com/*", "http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Dota Web Sync",
+    "default_popup": "popup.html"
+  }
+}

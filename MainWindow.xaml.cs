@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _reloadTimer;
     private readonly DispatcherTimer _autoRefreshTimer;
     private readonly Forms.NotifyIcon _trayIcon;
+    private readonly BrowserSyncServer _browserSyncServer;
     private Forms.ToolStripItem? _trayOpenItem;
     private Forms.ToolStripItem? _trayRefreshItem;
     private Forms.ToolStripItem? _trayStartupItem;
@@ -48,6 +49,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        _browserSyncServer = new BrowserSyncServer();
+        _browserSyncServer.StatusChanged += BrowserSyncServer_StatusChanged;
+
         _reloadTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _reloadTimer.Tick += (_, _) =>
         {
@@ -62,6 +66,7 @@ public partial class MainWindow : Window
         _trayIcon = CreateTrayIcon();
         Loaded += async (_, _) =>
         {
+            _browserSyncServer.Start();
             LoadBoard();
             WatchBoardFile();
             _trayIcon.Visible = true;
@@ -686,6 +691,24 @@ public partial class MainWindow : Window
         DotaPatchTagText.ToolTip = _isThai
             ? "เวอร์ชันแพตช์ล่าสุดจาก Valve"
             : "Latest patch version from Valve";
+        UpdateWebSyncTag();
+    }
+
+    private void UpdateWebSyncTag()
+    {
+        WebSyncButton.Content = _browserSyncServer.IsConnected
+            ? "WEB: LINKED"
+            : string.IsNullOrWhiteSpace(_browserSyncServer.ErrorMessage) ? "WEB: WAITING" : "WEB: ERROR";
+        WebSyncButton.ToolTip = _browserSyncServer.IsConnected
+            ? (_isThai ? $"เชื่อมต่อ {_browserSyncServer.ExtensionName} แล้ว • คลิกเพื่อค้นเว็บ" : $"Connected to {_browserSyncServer.ExtensionName} • Click to search the web")
+            : !string.IsNullOrWhiteSpace(_browserSyncServer.ErrorMessage)
+                ? (_isThai ? $"เปิด Web Sync ไม่สำเร็จ: {_browserSyncServer.ErrorMessage}" : $"Web Sync failed: {_browserSyncServer.ErrorMessage}")
+                : (_isThai ? $"รอ Chrome Extension ที่ 127.0.0.1:{BrowserSyncServer.Port} • คลิกเพื่อจับคู่" : $"Waiting for Chrome Extension on 127.0.0.1:{BrowserSyncServer.Port} • Click to pair");
+    }
+
+    private void BrowserSyncServer_StatusChanged(object? sender, EventArgs eventArgs)
+    {
+        Dispatcher.Invoke(UpdateWebSyncTag);
     }
 
     private void OpenMetaCounter()
@@ -730,6 +753,8 @@ public partial class MainWindow : Window
         _exitRequested = true;
         _watcher?.Dispose();
         _autoRefreshTimer.Stop();
+        _browserSyncServer.StatusChanged -= BrowserSyncServer_StatusChanged;
+        _browserSyncServer.Dispose();
         _trayIcon.Visible = false;
         _trayIcon.Dispose();
         System.Windows.Application.Current.Shutdown();
@@ -822,6 +847,20 @@ public partial class MainWindow : Window
         ApplyLanguageText();
         RenderBoard();
         UpdateBoardStatus();
+    }
+
+    private void WebSyncButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        try
+        {
+            new BrowserSearchWindow(_browserSyncServer, _isThai) { Owner = this }.ShowDialog();
+        }
+        catch (Exception exception)
+        {
+            StatusText.Text = _isThai
+                ? $"เปิดหน้าค้นเว็บไม่สำเร็จ: {exception.Message}"
+                : $"Could not open Browser Search: {exception.Message}";
+        }
     }
 
     private void ApplyLanguageText()

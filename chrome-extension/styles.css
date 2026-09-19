@@ -1,0 +1,107 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", sans-serif;
+  background: #101318;
+  color: #f1f4f8;
+}
+
+body {
+  width: 340px;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+header, .row, dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#statusBadge {
+  border: 1px solid #596573;
+  border-radius: 5px;
+  padding: 3px 7px;
+  color: #f4c46a;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+#statusBadge[data-status="connected"], #statusBadge[data-status="searching"] {
+  color: #71d6b1;
+  border-color: #3c806a;
+}
+
+#statusBadge[data-status="error"], #statusBadge[data-status="rejected"] {
+  color: #ef6a5b;
+  border-color: #8c4138;
+}
+
+p {
+  color: #9da7b3;
+  line-height: 1.45;
+}
+
+label, dt {
+  color: #9da7b3;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #3a4653;
+  border-radius: 6px;
+  background: #181d24;
+  color: #f1f4f8;
+  font: 700 17px Consolas, monospace;
+  letter-spacing: 4px;
+}
+
+button {
+  padding: 10px 12px;
+  border: 1px solid #3a4653;
+  border-radius: 6px;
+  background: #d84b3e;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.secondary {
+  width: 100%;
+  background: #252c35;
+}
+
+dl {
+  margin: 14px 0;
+  padding: 10px;
+  border: 1px solid #2a323d;
+  border-radius: 7px;
+  background: #181d24;
+}
+
+dl div + div {
+  margin-top: 7px;
+}
+
+dd {
+  margin: 0;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note {
+  margin-bottom: 0;
+  font-size: 11px;
+}
