@@ -10,7 +10,31 @@
         Foreground="{StaticResource PrimaryText}"
         FontFamily="{DynamicResource AppFont}"
         FontSize="15"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="Manual">
+    <Window.Resources>
+        <Style x:Key="RankTagButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#202832" />
+            <Setter Property="Foreground" Value="#71D6B1" />
+            <Setter Property="BorderBrush" Value="#3A4653" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Surface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="Background" Value="#2B3742" /></Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter TargetName="Surface" Property="Background" Value="#334451" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,6 +60,7 @@
                     <Border Style="{StaticResource VersionTagStyle}">
                         <TextBlock x:Name="AppVersionTagText" Style="{StaticResource VersionTagTextStyle}" />
                     </Border>
+                    <Button x:Name="RankModeButton" Margin="6,0,0,0" Style="{StaticResource RankTagButtonStyle}" Click="RankModeButton_Click" />
                     <Border Margin="6,0,0,0" Style="{StaticResource VersionTagStyle}">
                         <TextBlock x:Name="DotaPatchTagText" Style="{StaticResource VersionTagTextStyle}" Foreground="#F4C46A" />
                     </Border>

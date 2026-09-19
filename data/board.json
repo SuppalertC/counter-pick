@@ -15,6 +15,214 @@
     "envPath": "",
     "apiKeyVariable": "GEMINI_API_KEY"
   },
+  "rankCombos": {
+    "patch": "7.41f",
+    "sourceNote": "Curated from current patch trends plus bracket-level core/support win-rate leaders. Hero win rate is not a guaranteed team win rate.",
+    "archon": [
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+            { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Global Finish", "specialtyTh": "🏅 ARCHON • เปิดทั่วแมพแล้วปิดคิล", "winCondition": "Zeus lowers and reveals targets, Venge secures the opening, and Spectre joins every favorable fight.", "winConditionTh": "Zeus ลดเลือดและเปิดเป้า, Venge จัดจังหวะเริ่ม แล้ว Spectre เข้าทุกไฟต์ที่ได้เปรียบ" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+            { "hero": "sniper", "name": "Sniper", "role": "Mid" },
+            { "hero": "ogre_magi", "name": "Ogre Magi", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Simple Front-to-Back", "specialtyTh": "🏅 ARCHON • เล่นง่ายหน้าไปหลัง", "winCondition": "Ogre protects the lanes, Spectre absorbs attention, and Sniper deals uninterrupted damage from range.", "winConditionTh": "Ogre ประคองเลน, Spectre รับความสนใจ แล้ว Sniper ยิงฟรีจากระยะไกล" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
+            { "hero": "puck", "name": "Puck", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Two-Life Catch", "specialtyTh": "🏅 ARCHON • สองชีวิตเปิดจับ", "winCondition": "Puck starts the catch, Venge prevents the escape, and Wraith King commits without fearing the first death.", "winConditionTh": "Puck เปิดจับ, Venge กันหนี แล้ว Wraith King เข้าสุดโดยไม่กลัวตายรอบแรก" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
+            { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+            { "hero": "ogre_magi", "name": "Ogre Magi", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Buffed Frontline", "specialtyTh": "🏅 ARCHON • บัฟแนวหน้าเล่นตรง", "winCondition": "Ogre buffs Wraith King, Invoker follows his stun, and the team wins repeated direct engagements.", "winConditionTh": "Ogre บัฟ Wraith King, Invoker ต่อจากสตัน แล้วชนะไฟต์ตรงแบบซ้ำๆ" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+            { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+            { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Illusion Dive", "specialtyTh": "🏅 ARCHON • ภาพลวงบุกแนวหลัง", "winCondition": "Grimstroke accelerates the first dive while Ember and Phantom Lancer overwhelm split targets.", "winConditionTh": "Grimstroke เร่งจังหวะบุกแรก แล้ว Ember กับ Phantom Lancer กดเป้าที่แยกกัน" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+            { "hero": "sniper", "name": "Sniper", "role": "Mid" },
+            { "hero": "lich", "name": "Lich", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Slow Siege", "specialtyTh": "🏅 ARCHON • สโลว์แล้วล้อมยิง", "winCondition": "Lich delays the enemy push, Phantom Lancer crowds the frontline, and Sniper safely finishes targets.", "winConditionTh": "Lich ชะลอการบุก, Phantom Lancer ถมแนวหน้า แล้ว Sniper ยิงปิดอย่างปลอดภัย" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "medusa", "name": "Medusa", "role": "Carry" },
+            { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Mana Core Wall", "specialtyTh": "🏅 ARCHON • กำแพงสอง core", "winCondition": "Venge fixes positioning while Medusa holds the area and Outworld Destroyer removes the dangerous core.", "winConditionTh": "Venge แก้ตำแหน่ง, Medusa ยึดพื้นที่ และ Outworld Destroyer เอา core อันตรายออกจากไฟต์" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "bloodseeker", "name": "Bloodseeker", "role": "Carry" },
+            { "hero": "zuus", "name": "Zeus", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Low-HP Hunt", "specialtyTh": "🏅 ARCHON • ไล่ล่าตัวเลือดน้อย", "winCondition": "Zeus activates Thirst, Venge moves the victim out of position, and Bloodseeker completes the chase.", "winConditionTh": "Zeus เปิด Thirst, Venge ดึงเหยื่อเสียตำแหน่ง แล้ว Bloodseeker ไล่ปิด" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "life_stealer", "name": "Lifestealer", "role": "Carry" },
+            { "hero": "puck", "name": "Puck", "role": "Mid" },
+            { "hero": "ogre_magi", "name": "Ogre Magi", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Durable Pickoff", "specialtyTh": "🏅 ARCHON • จับง่ายตายยาก", "winCondition": "Puck controls the target, Ogre supplies reliable stuns, and Lifestealer stays active through return damage.", "winConditionTh": "Puck คุมเป้า, Ogre เติมสตันที่ใช้ตรงๆ แล้ว Lifestealer ยืนตีผ่านดาเมจสวน" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "riki", "name": "Riki", "role": "Carry" },
+            { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+            { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏅 Archon Silence Ambush", "specialtyTh": "🏅 ARCHON • ลอบปิดสกิล", "winCondition": "Grimstroke and Invoker create layered control so Riki can finish supports inside Smoke Screen.", "winConditionTh": "Grimstroke กับ Invoker ซ้อนคอนโทรล ให้ Riki ฆ่าซัพพอร์ตใน Smoke Screen" }
+        }
+      }
+    ],
+    "legend": [
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+            { "hero": "puck", "name": "Puck", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Coordinated Collapse", "specialtyTh": "🏆 LEGEND • รุมเป้าพร้อมกัน", "winCondition": "Puck identifies the opening, Spectre arrives on the backline, and Venge protects the exit timing.", "winConditionTh": "Puck หา opening, Spectre เข้าหลังบ้าน แล้ว Venge คุมจังหวะถอน" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "spectre", "name": "Spectre", "role": "Carry" },
+            { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+            { "hero": "phoenix", "name": "Phoenix", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Backline Burn", "specialtyTh": "🏆 LEGEND • เผาแนวหลังสองทาง", "winCondition": "Ember and Spectre force attention in two places while Phoenix punishes enemies who group to respond.", "winConditionTh": "Ember กับ Spectre บังคับมองสองจุด แล้ว Phoenix ลงโทษศัตรูที่รวมตัวแก้" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+            { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+            { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Layered Chaos", "specialtyTh": "🏆 LEGEND • ซ้อนสกิลในภาพลวง", "winCondition": "Grimstroke links priority targets, Invoker controls the zone, and Phantom Lancer exhausts every defensive resource.", "winConditionTh": "Grimstroke ลิงก์เป้าหลัก, Invoker คุมโซน แล้ว Phantom Lancer บังคับใช้ของป้องกันทั้งหมด" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "phantom_lancer", "name": "Phantom Lancer", "role": "Carry" },
+            { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+            { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Hex Objective", "specialtyTh": "🏆 LEGEND • จับแล้วเปลี่ยนเป็นป้อม", "winCondition": "Shadow Shaman guarantees the catch, Outworld Destroyer prevents a save, and Phantom Lancer converts it into map pressure.", "winConditionTh": "Shadow Shaman ล็อกเป้า, Outworld Destroyer กันตัวช่วย แล้ว Phantom Lancer เปลี่ยนคิลเป็นแรงกดดันแมพ" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "skeleton_king", "name": "Wraith King", "role": "Carry" },
+            { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+            { "hero": "phoenix", "name": "Phoenix", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Multi-Life Frontline", "specialtyTh": "🏆 LEGEND • แนวหน้าหลายชีวิต", "winCondition": "Wraith King absorbs the opening, Phoenix resets the area with Supernova, and Outworld Destroyer finishes the second phase.", "winConditionTh": "Wraith King รับการเปิด, Phoenix รีเซ็ตพื้นที่ด้วย Supernova แล้ว Outworld Destroyer ปิดไฟต์ช่วงสอง" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "riki", "name": "Riki", "role": "Carry" },
+            { "hero": "puck", "name": "Puck", "role": "Mid" },
+            { "hero": "grimstroke", "name": "Grimstroke", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Vision Punish", "specialtyTh": "🏆 LEGEND • ลงโทษวิสัยทัศน์พลาด", "winCondition": "Puck forces movement, Grimstroke extends the silence, and Riki punishes supports who cross unwarded ground.", "winConditionTh": "Puck บังคับการเคลื่อนที่, Grimstroke ต่อ silence แล้ว Riki ลงโทษซัพพอร์ตที่เดินผ่านจุดไม่มี ward" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "riki", "name": "Riki", "role": "Carry" },
+            { "hero": "ember_spirit", "name": "Ember Spirit", "role": "Mid" },
+            { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Fast Map Pick", "specialtyTh": "🏆 LEGEND • จับเร็วทั่วแมพ", "winCondition": "Ember scouts the opening, Shadow Shaman locks the target, and Riki closes every nearby escape route.", "winConditionTh": "Ember หา opening, Shadow Shaman ล็อกเป้า แล้ว Riki ปิดทางหนีใกล้ทั้งหมด" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "dawnbreaker", "name": "Dawnbreaker", "role": "Carry" },
+            { "hero": "invoker", "name": "Invoker", "role": "Mid" },
+            { "hero": "phoenix", "name": "Phoenix", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Global Solar Fight", "specialtyTh": "🏆 LEGEND • ลงไฟต์ทั่วแมพ", "winCondition": "Invoker starts from range, Dawnbreaker joins globally, and Phoenix controls the clustered response.", "winConditionTh": "Invoker เปิดจากระยะ, Dawnbreaker ลงช่วยทั่วแมพ แล้ว Phoenix คุมศัตรูที่รวมตอบโต้" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "life_stealer", "name": "Lifestealer", "role": "Carry" },
+            { "hero": "puck", "name": "Puck", "role": "Mid" },
+            { "hero": "vengefulspirit", "name": "Venge", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Save and Re-entry", "specialtyTh": "🏆 LEGEND • เซฟแล้วเข้าซ้ำ", "winCondition": "Puck starts the fight, Venge saves the first commitment, and Lifestealer re-enters after defensive spells expire.", "winConditionTh": "Puck เปิดไฟต์, Venge เซฟการเข้าครั้งแรก แล้ว Lifestealer เข้าซ้ำหลังของป้องกันหมด" }
+        }
+      },
+      {
+        "cells": {
+          "pick": { "picks": [
+            { "hero": "juggernaut", "name": "Juggernaut", "role": "Carry" },
+            { "hero": "obsidian_destroyer", "name": "Outworld Destroyer", "role": "Mid" },
+            { "hero": "shadow_shaman", "name": "Shadow Shaman", "role": "Support" }
+          ]},
+          "detail": { "specialty": "🏆 Legend Isolated Execution", "specialtyTh": "🏆 LEGEND • แยกเป้าแล้วประหาร", "winCondition": "Hex starts the sequence, Astral removes interference, and Juggernaut uses Omnislash on the isolated hero.", "winConditionTh": "Hex เริ่มคอมโบ, Astral เอาตัวขัดออก แล้ว Juggernaut ใช้ Omnislash ใส่เป้าที่โดดเดี่ยว" }
+        }
+      }
+    ]
+  },
   "columns": [
     { "key": "pick", "label": "PICK", "labelTh": "ฮีโร่ที่เลือก", "width": 64 },
     { "key": "detail", "label": "DETAIL", "labelTh": "รายละเอียด", "width": 36 }

@@ -35,6 +35,14 @@ public partial class MainWindow : Window
     private bool _isRefreshingData;
     private string _currentPatchNumber = string.Empty;
     private bool _patchLookupFailed;
+    private RankComboMode _rankComboMode;
+
+    private enum RankComboMode
+    {
+        All,
+        Archon,
+        Legend
+    }
 
     public MainWindow()
     {
@@ -108,9 +116,7 @@ public partial class MainWindow : Window
             RenderBoard();
             UpdateStartupMenuState();
             UpdateAutoUpdateButton();
-            StatusText.Text = _isThai
-                ? $"โหลด {_config.Rows.Count} ชุดฮีโร่ • {DateTime.Now:HH:mm:ss}"
-                : $"Loaded {_config.Rows.Count} lineups • {DateTime.Now:HH:mm:ss}";
+            UpdateBoardStatus();
         }
         catch (Exception exception)
         {
@@ -125,14 +131,14 @@ public partial class MainWindow : Window
         var screens = Forms.Screen.AllScreens;
         var screenIndex = Math.Clamp(_config.Window.TargetScreen - 1, 0, screens.Length - 1);
         var targetScreen = screens[screenIndex];
+        var scale = GetScreenScale(targetScreen);
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        WindowState = WindowState.Normal;
+        Left = targetScreen.WorkingArea.Left / scale;
+        Top = targetScreen.WorkingArea.Top / scale;
 
         if (_config.Window.FitToWorkArea)
         {
-            var scale = GetScreenScale(targetScreen);
-            WindowStartupLocation = WindowStartupLocation.Manual;
-            WindowState = WindowState.Normal;
-            Left = targetScreen.WorkingArea.Left / scale;
-            Top = targetScreen.WorkingArea.Top / scale;
             Width = targetScreen.WorkingArea.Width / scale;
             Height = targetScreen.WorkingArea.Height / scale;
         }
@@ -173,12 +179,13 @@ public partial class MainWindow : Window
 
     private void RenderBoard()
     {
+        var rows = GetActiveRows();
         BoardPanel.Children.Clear();
         BoardPanel.Children.Add(CreateRow(_config.Columns.Select(column => (column, (JsonElement?)null)), true, 0));
 
-        for (var rowIndex = 0; rowIndex < _config.Rows.Count; rowIndex++)
+        for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
         {
-            var row = _config.Rows[rowIndex];
+            var row = rows[rowIndex];
             BoardPanel.Children.Add(CreateRow(
                 _config.Columns.Select(column =>
                     (column, row.Cells.TryGetValue(column.Key, out var value) ? value : (JsonElement?)null)),
@@ -186,6 +193,29 @@ public partial class MainWindow : Window
                 rowIndex,
                 row));
         }
+    }
+
+    private IReadOnlyList<RowConfig> GetActiveRows()
+    {
+        return _rankComboMode switch
+        {
+            RankComboMode.Archon when _config.RankCombos.Archon.Count > 0 => _config.RankCombos.Archon,
+            RankComboMode.Legend when _config.RankCombos.Legend.Count > 0 => _config.RankCombos.Legend,
+            _ => _config.Rows
+        };
+    }
+
+    private void UpdateBoardStatus()
+    {
+        var mode = _rankComboMode switch
+        {
+            RankComboMode.Archon => "ARCHON",
+            RankComboMode.Legend => "LEGEND",
+            _ => "ALL"
+        };
+        StatusText.Text = _isThai
+            ? $"โหลด {GetActiveRows().Count} ชุด • โหมด {mode} • {DateTime.Now:HH:mm:ss}"
+            : $"Loaded {GetActiveRows().Count} lineups • {mode} mode • {DateTime.Now:HH:mm:ss}";
     }
 
     private FrameworkElement CreateRow(
@@ -584,7 +614,7 @@ public partial class MainWindow : Window
 
     private async Task RefreshMetaDataAsync(bool forceRefresh)
     {
-        if (_isRefreshingData || _config.Rows.Count == 0)
+        if (_isRefreshingData || GetActiveRows().Count == 0)
         {
             return;
         }
@@ -594,7 +624,7 @@ public partial class MainWindow : Window
         StatusText.Text = _isThai ? "กำลังอัปเดต patch, meta และ counter..." : "Refreshing patch, meta, and counter data...";
         try
         {
-            var result = await new MetaCounterService().AnalyzeAsync(_config.Rows, _isThai, forceRefresh);
+            var result = await new MetaCounterService().AnalyzeAsync(GetActiveRows(), _isThai, forceRefresh);
             _currentPatchNumber = result.PatchNumber;
             _patchLookupFailed = false;
             UpdateVersionTags();
@@ -641,6 +671,15 @@ public partial class MainWindow : Window
     private void UpdateVersionTags()
     {
         AppVersionTagText.Text = $"APP v{AppVersionInfo.Current}";
+        RankModeButton.Content = _rankComboMode switch
+        {
+            RankComboMode.Archon => "RANK: ARCHON",
+            RankComboMode.Legend => "RANK: LEGEND",
+            _ => "COMBO: ALL"
+        };
+        RankModeButton.ToolTip = _isThai
+            ? $"คลิกเพื่อสลับ ALL / ARCHON / LEGEND • อ้างอิงแพตช์ {_config.RankCombos.Patch} • คัดจาก win rate รายฮีโร่"
+            : $"Cycle ALL / ARCHON / LEGEND • Patch {_config.RankCombos.Patch} • Curated from individual hero win rates";
         DotaPatchTagText.Text = !string.IsNullOrWhiteSpace(_currentPatchNumber)
             ? $"DOTA {_currentPatchNumber}"
             : _patchLookupFailed ? "DOTA PATCH OFFLINE" : "DOTA PATCH …";
@@ -654,7 +693,7 @@ public partial class MainWindow : Window
         NavigationPopup.IsOpen = false;
         try
         {
-            new MetaCounterWindow(_config.Rows, _isThai) { Owner = this }.ShowDialog();
+            new MetaCounterWindow(GetActiveRows(), _isThai) { Owner = this }.ShowDialog();
         }
         catch (Exception exception)
         {
@@ -682,7 +721,7 @@ public partial class MainWindow : Window
     private void ShowWindow()
     {
         Show();
-        WindowState = WindowState.Normal;
+        ApplyWindowConfig();
         Activate();
     }
 
@@ -772,13 +811,35 @@ public partial class MainWindow : Window
         StatusText.Text = _isThai ? "เปลี่ยนภาษาเป็นไทยแล้ว" : "Language changed to English";
     }
 
+    private void RankModeButton_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        _rankComboMode = _rankComboMode switch
+        {
+            RankComboMode.All => RankComboMode.Archon,
+            RankComboMode.Archon => RankComboMode.Legend,
+            _ => RankComboMode.All
+        };
+        ApplyLanguageText();
+        RenderBoard();
+        UpdateBoardStatus();
+    }
+
     private void ApplyLanguageText()
     {
         Title = "Dota 2 Team Board";
         BoardTitleText.Text = Title;
-        SubtitleText.Text = _isThai
-            ? "คลิกชุดฮีโร่เพื่อให้ Gemini วิเคราะห์ • รีเฟรช JSON อัตโนมัติ"
-            : "Click a lineup for Gemini analysis • JSON auto-refresh";
+        SubtitleText.Text = _rankComboMode switch
+        {
+            RankComboMode.Archon => _isThai
+                ? "ชุด ARCHON คัดจาก core/support win rate สูง • คลิกทีมเพื่อวิเคราะห์"
+                : "ARCHON combos curated from high-win-rate cores/supports • Click to analyze",
+            RankComboMode.Legend => _isThai
+                ? "ชุด LEGEND คัดจาก core/support win rate สูง • คลิกทีมเพื่อวิเคราะห์"
+                : "LEGEND combos curated from high-win-rate cores/supports • Click to analyze",
+            _ => _isThai
+                ? "คลิกชุดฮีโร่เพื่อให้ Gemini วิเคราะห์ • รีเฟรช JSON อัตโนมัติ"
+                : "Click a lineup for Gemini analysis • JSON auto-refresh"
+        };
         LanguageButton.Content = _isThai ? "LANG: TH" : "LANG: EN";
         LanguageButton.ToolTip = _isThai ? "เปลี่ยนเป็นภาษาอังกฤษ" : "Switch to Thai";
         ReloadButton.ToolTip = _isThai ? "รีเฟรช JSON" : "Refresh JSON";

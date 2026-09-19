@@ -7,8 +7,17 @@ public sealed class BoardConfig
     public string Title { get; set; } = "Dota 2 Team Board";
     public WindowConfig Window { get; set; } = new();
     public GeminiConfig Gemini { get; set; } = new();
+    public RankComboConfig RankCombos { get; set; } = new();
     public List<ColumnConfig> Columns { get; set; } = [];
     public List<RowConfig> Rows { get; set; } = [];
+}
+
+public sealed class RankComboConfig
+{
+    public string Patch { get; set; } = string.Empty;
+    public string SourceNote { get; set; } = string.Empty;
+    public List<RowConfig> Archon { get; set; } = [];
+    public List<RowConfig> Legend { get; set; } = [];
 }
 
 public sealed class GeminiConfig

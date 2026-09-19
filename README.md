@@ -20,6 +20,8 @@ dotnet run
 - ค่าเริ่มต้นเปิดเต็ม work area ของจอ 2 ที่ `864x1488` แต่สามารถลากย่อ–ขยายได้ ตารางและคอลัมน์จะปรับตามหน้าต่างอัตโนมัติ โดยตั้งค่าได้ผ่าน `targetScreen`, `fitToWorkArea` และ `lockSize` ใน JSON
 - ตารางยืดและหดตามความกว้างหน้าต่างอัตโนมัติ ค่า `width` ของแต่ละคอลัมน์ใน JSON ใช้เป็นสัดส่วนเทียบกับคอลัมน์อื่น
 - ตารางหลักมี 60 ชุด `Carry + Mid + Support` ครอบคลุม aggressive meta, global hunt, split push, teamfight wombo และคอมโบคลาสสิกที่ชุมชนผู้เล่นนิยมแชร์กัน
+- tag ข้าง `APP v1.3.3` สลับข้อมูล `COMBO: ALL → RANK: ARCHON → RANK: LEGEND` โดยมีชุดคัดจาก core/support win rate สูงอย่างละ 10 ทีมสำหรับ Archon และ Legend
+- หน้าต่างหลักเกิดและเปิดกลับที่ขอบซ้ายบนของ work area บนจอ `targetScreen` เสมอ
 - คลิก lineup เพื่อเปิด Gemini analysis แบบหน้า `v1.3.2` ซึ่งมี phase plan, counters, replacements และ critical stage กลับมาครบ พร้อมไอเทม 4 ชิ้นต่อฮีโร่
 - ลำดับดราฟต์แสดง counter ที่ต้องระวังในแต่ละ pick และฮีโร่ตำแหน่งเดียวกันที่ควรเปลี่ยนหยิบตอบโต้หากศัตรูเปิดตัวแก้ทางก่อน
 - หน้า analysis ใช้แท็บชื่อฮีโร่จริง เช่น `Wraith King / Sniper / Venge` โดยแต่ละแท็บมี timeline, แผนที่ Dota 2 จากไฟล์เกมปัจจุบัน, จุดเกิด neutral camp ทั้งหมด, เส้นทางฟาร์ม Radiant/Dire 5 ช่วง และ checklist ไปต่อ/ยกเลิก 4 ข้อ
