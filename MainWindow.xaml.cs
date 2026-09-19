@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _autoRefreshTimer;
     private readonly Forms.NotifyIcon _trayIcon;
     private readonly BrowserSyncServer _browserSyncServer;
+    private readonly McpServer _mcpServer;
     private Forms.ToolStripItem? _trayOpenItem;
     private Forms.ToolStripItem? _trayRefreshItem;
     private Forms.ToolStripItem? _trayStartupItem;
@@ -51,6 +52,8 @@ public partial class MainWindow : Window
 
         _browserSyncServer = new BrowserSyncServer();
         _browserSyncServer.StatusChanged += BrowserSyncServer_StatusChanged;
+        _mcpServer = new McpServer(_boardPath, _browserSyncServer, () => _currentPatchNumber);
+        _mcpServer.StatusChanged += McpServer_StatusChanged;
 
         _reloadTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _reloadTimer.Tick += (_, _) =>
@@ -67,6 +70,7 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             _browserSyncServer.Start();
+            _mcpServer.Start();
             LoadBoard();
             WatchBoardFile();
             _trayIcon.Visible = true;
@@ -711,6 +715,19 @@ public partial class MainWindow : Window
         Dispatcher.Invoke(UpdateWebSyncTag);
     }
 
+    private void McpServer_StatusChanged(object? sender, EventArgs eventArgs)
+    {
+        Dispatcher.Invoke(UpdateMcpMenuText);
+    }
+
+    private void UpdateMcpMenuText()
+    {
+        McpMenuTitleText.Text = _mcpServer.IsRunning ? "LOCAL MCP: READY" : "LOCAL MCP: ERROR";
+        McpMenuDetailText.Text = _mcpServer.IsRunning
+            ? (_isThai ? $"รับคำสั่งที่ {McpServer.Endpoint} • {_mcpServer.RequestCount} requests" : $"Listening at {McpServer.Endpoint} • {_mcpServer.RequestCount} requests")
+            : (_isThai ? $"เปิด server ไม่สำเร็จ: {_mcpServer.ErrorMessage}" : $"Could not start server: {_mcpServer.ErrorMessage}");
+    }
+
     private void OpenMetaCounter()
     {
         NavigationPopup.IsOpen = false;
@@ -753,6 +770,8 @@ public partial class MainWindow : Window
         _exitRequested = true;
         _watcher?.Dispose();
         _autoRefreshTimer.Stop();
+        _mcpServer.StatusChanged -= McpServer_StatusChanged;
+        _mcpServer.Dispose();
         _browserSyncServer.StatusChanged -= BrowserSyncServer_StatusChanged;
         _browserSyncServer.Dispose();
         _trayIcon.Visible = false;
@@ -800,6 +819,21 @@ public partial class MainWindow : Window
         catch (Exception exception)
         {
             StatusText.Text = _isThai ? $"เปิดหน้า Combo JSON ไม่สำเร็จ: {exception.Message}" : $"Could not open Combo JSON: {exception.Message}";
+        }
+    }
+
+    private void McpMenuItem_Click(object sender, RoutedEventArgs eventArgs)
+    {
+        NavigationPopup.IsOpen = false;
+        try
+        {
+            new McpWindow(_mcpServer, _isThai) { Owner = this }.ShowDialog();
+        }
+        catch (Exception exception)
+        {
+            StatusText.Text = _isThai
+                ? $"เปิดหน้า MCP ไม่สำเร็จ: {exception.Message}"
+                : $"Could not open MCP page: {exception.Message}";
         }
     }
 
@@ -893,6 +927,7 @@ public partial class MainWindow : Window
         HeroCounterMenuDetailText.Text = _isThai ? "ค้นหาตัวที่ได้เปรียบและเสียเปรียบให้ทันดราฟต์" : "Find favorable and difficult matchups fast";
         ComboJsonMenuTitleText.Text = _isThai ? "COMBO หลัก 3 ฮีโร่ / JSON" : "MAIN 3-HERO COMBOS / JSON";
         ComboJsonMenuDetailText.Text = _isThai ? "นำเข้า-ส่งออกเฉพาะชุด Carry + Mid + Support หน้าหลัก" : "Import or export main Carry + Mid + Support rows";
+        UpdateMcpMenuText();
         RefreshDataMenuButton.Content = _isThai ? "↻  อัปเดตข้อมูลเมตาเดี๋ยวนี้" : "↻  REFRESH META DATA NOW";
         SettingsMenuButton.Content = _isThai ? "⚙  ตั้งค่า / GEMINI API" : "⚙  SETTINGS / GEMINI API";
         UpdateVersionTags();

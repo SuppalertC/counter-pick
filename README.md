@@ -23,6 +23,9 @@ dotnet run
 - tag ข้าง `APP v1.3.3` สลับข้อมูล `COMBO: ALL → RANK: ARCHON → RANK: LEGEND` โดยมีชุดคัดจาก core/support win rate สูงอย่างละ 10 ทีมสำหรับ Archon และ Legend
 - tag `WEB: WAITING/LINKED` เปิดหน้าค้นเว็บสาธารณะผ่าน Chrome Extension โดยจับคู่ด้วยรหัส 6 หลักและส่งข้อมูลผ่าน WebSocket เฉพาะเครื่องที่ `127.0.0.1:37821`
 - ติดตั้ง extension แบบ unpacked จากโฟลเดอร์ `chrome-extension` ตาม `chrome-extension/README.md`; ระบบไม่ควบคุม ChatGPT และไม่อ่าน cookie/session ของเบราว์เซอร์
+- เมนู **LOCAL MCP SERVER** เปิด MCP แบบ Streamable HTTP ที่ `http://127.0.0.1:37822/mcp` พร้อมชื่อ plugin, access token, Authorization header และ client config สำหรับคัดลอกไปกรอกหน้า Add plugin
+- MCP มี tools สำหรับอ่าน app context, รับ prompt/schema, list combo ตาม rank, validate/import Combo Pack และค้นเว็บผ่าน extension; ผลลัพธ์ส่งทั้งข้อความและ `structuredContent` ตาม format ของแอป
+- MCP bind เฉพาะ localhost และต้องใช้ Bearer token จึงเหมาะกับ MCP client ที่ทำงานบนเครื่องเดียวกัน; บริการ plugin ที่รันบน cloud จะเข้าถึง `127.0.0.1` ของเครื่องไม่ได้โดยตรง
 - หน้าต่างหลักเกิดและเปิดกลับที่ขอบซ้ายบนของ work area บนจอ `targetScreen` เสมอ
 - คลิก lineup เพื่อเปิด Gemini analysis แบบหน้า `v1.3.2` ซึ่งมี phase plan, counters, replacements และ critical stage กลับมาครบ พร้อมไอเทม 4 ชิ้นต่อฮีโร่
 - ลำดับดราฟต์แสดง counter ที่ต้องระวังในแต่ละ pick และฮีโร่ตำแหน่งเดียวกันที่ควรเปลี่ยนหยิบตอบโต้หากศัตรูเปิดตัวแก้ทางก่อน

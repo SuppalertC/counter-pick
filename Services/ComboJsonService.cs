@@ -80,6 +80,11 @@ public sealed class ComboJsonService
     public async Task<ComboPack> LoadPackAsync(string path)
     {
         var json = await File.ReadAllTextAsync(path);
+        return ParsePack(json);
+    }
+
+    public ComboPack ParsePack(string json)
+    {
         using var document = JsonDocument.Parse(json, new JsonDocumentOptions
         {
             AllowTrailingCommas = true,
@@ -110,13 +115,13 @@ public sealed class ComboJsonService
             throw new InvalidDataException("Unsupported JSON. Expected combo pack, board.json, or a combo array.");
         }
 
-        Validate(pack);
+        ValidatePack(pack);
         return pack;
     }
 
     public ComboImportResult ApplyImport(string boardPath, ComboPack pack, bool replace)
     {
-        Validate(pack);
+        ValidatePack(pack);
         var board = BoardLoader.Load(boardPath);
         var importedRows = pack.Combos.Select(ToBoardRow).ToList();
         var skipped = 0;
@@ -151,7 +156,7 @@ public sealed class ComboJsonService
         await File.WriteAllTextAsync(path, Serialize(pack));
     }
 
-    private static void Validate(ComboPack pack)
+    public void ValidatePack(ComboPack pack)
     {
         if (pack.FormatVersion != 1)
         {
