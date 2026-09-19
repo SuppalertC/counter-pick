@@ -67,8 +67,32 @@
                             <TextBox x:Name="EndpointBox" IsReadOnly="True" FontFamily="Consolas" Padding="9" />
                             <Button x:Name="CopyEndpointButton" Grid.Column="1" Margin="8,0,0,0" Content="COPY" Click="CopyEndpointButton_Click" />
                         </Grid>
-                        <TextBlock x:Name="ConfigLabelText" Text="GENERIC MCP CLIENT CONFIG" Foreground="{StaticResource SecondaryText}" FontSize="11" FontWeight="Bold" />
+                        <TextBlock x:Name="ConfigLabelText" Text="LOCAL MCP CLIENT CONFIG" Foreground="{StaticResource SecondaryText}" FontSize="11" FontWeight="Bold" />
                         <TextBox x:Name="ConfigBox" Margin="0,5,0,0" MinHeight="190" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12" Padding="10" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem x:Name="ChatGptTab" Header="CHATGPT ADD PLUGIN">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12">
+                        <Border Background="#2A2117" BorderBrush="#8B6636" BorderThickness="1" CornerRadius="8" Padding="13">
+                            <StackPanel>
+                                <TextBlock x:Name="UnsafeUrlTitleText" Text="DO NOT USE THE LOCAL URL IN PUBLIC URL" Foreground="#F4C46A" FontWeight="Bold" />
+                                <TextBlock x:Name="UnsafeUrlDetailText" Margin="0,5,0,0" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock x:Name="TunnelStepsText" Margin="2,14,2,0" TextWrapping="Wrap" LineHeight="23" />
+                        <WrapPanel Margin="0,16,0,0">
+                            <Button x:Name="OpenTunnelSettingsButton" Margin="0,0,8,8" Content="OPEN TUNNEL SETTINGS" Click="OpenTunnelSettingsButton_Click" />
+                            <Button x:Name="OpenTunnelGuideButton" Margin="0,0,8,8" Content="OPEN OFFICIAL GUIDE" Click="OpenTunnelGuideButton_Click" />
+                            <Button x:Name="CopyTunnelTargetButton" Margin="0,0,0,8" Content="COPY LOCAL TARGET" Click="CopyTunnelTargetButton_Click" />
+                        </WrapPanel>
+                        <Border Margin="0,8,0,0" Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock x:Name="TunnelConnectionTitleText" FontWeight="Bold" />
+                                <TextBlock x:Name="TunnelConnectionDetailText" Margin="0,5,0,0" Foreground="{StaticResource SecondaryText}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
