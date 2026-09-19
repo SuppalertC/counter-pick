@@ -18,8 +18,6 @@ public partial class McpWindow : Window
         PluginNameBox.Text = McpServer.DisplayName;
         TransportBox.Text = McpServer.TransportName;
         EndpointBox.Text = McpServer.Endpoint;
-        TokenBox.Text = _server.AccessToken;
-        AuthBox.Text = $"Authorization: Bearer {_server.AccessToken}";
         ConfigBox.Text = _server.CreateClientConfig();
         ApplyLanguage();
         UpdateStatus();
@@ -36,12 +34,10 @@ public partial class McpWindow : Window
             : "Let MCP clients call tools, read data, and send Combo Packs back in the app's exact JSON format.";
         CloseButton.Content = _isThai ? "ปิด" : "CLOSE";
         CopyConfigButton.Content = _isThai ? "คัดลอก CLIENT CONFIG" : "COPY CLIENT CONFIG";
-        CopyEndpointButton.Content = CopyTokenButton.Content = _isThai ? "คัดลอก" : "COPY";
+        CopyEndpointButton.Content = _isThai ? "คัดลอก" : "COPY";
         EndpointLabelText.Text = _isThai ? "ปลายทาง MCP" : "MCP ENDPOINT";
         PluginNameLabelText.Text = _isThai ? "ชื่อ PLUGIN" : "PLUGIN NAME";
         TransportLabelText.Text = "TRANSPORT";
-        TokenLabelText.Text = _isThai ? "ACCESS TOKEN" : "ACCESS TOKEN";
-        AuthLabelText.Text = _isThai ? "AUTH HEADER สำหรับกรอก ADD PLUGIN" : "AUTH HEADER FOR ADD PLUGIN";
         ConfigLabelText.Text = _isThai ? "CONFIG สำหรับ MCP CLIENT" : "GENERIC MCP CLIENT CONFIG";
         ConnectTab.Header = _isThai ? "เชื่อมต่อ" : "CONNECT";
         ToolsTab.Header = _isThai ? "คำสั่ง" : "TOOLS";
@@ -53,8 +49,8 @@ public partial class McpWindow : Window
         ImportToolText.Text = _isThai ? "เพิ่มหรือแทนที่ Combo Team เมื่อส่ง confirm=true และสำรองข้อมูลเดิมก่อนเสมอ" : "Append or replace Combo Teams with confirm=true; always backs up first.";
         SearchToolText.Text = _isThai ? "ค้นเว็บสาธารณะผ่าน Chrome Extension ที่จับคู่ไว้" : "Search public web sources through the paired Chrome Extension.";
         SecurityText.Text = _isThai
-            ? "• Server bind เฉพาะ 127.0.0.1 เท่านั้น\n• ทุก request ต้องส่ง Authorization: Bearer <token>\n• Browser origin อนุญาตเฉพาะ localhost และ Chrome Extension\n• import_combo_pack ต้องส่ง confirm=true\n• Token ถูกเก็บเฉพาะใน LocalAppData ของผู้ใช้ Windows คนนี้"
-            : "• Server binds only to 127.0.0.1\n• Every request requires Authorization: Bearer <token>\n• Browser origins are limited to localhost and Chrome extensions\n• import_combo_pack requires confirm=true\n• The token is stored only in this Windows user's LocalAppData";
+            ? "• Server bind เฉพาะ 127.0.0.1 เท่านั้น\n• ไม่ต้องใช้ token หรือ Authorization header\n• Browser origin อนุญาตเฉพาะ localhost และ Chrome Extension\n• import_combo_pack ต้องส่ง confirm=true"
+            : "• Server binds only to 127.0.0.1\n• No token or Authorization header is required\n• Browser origins are limited to localhost and Chrome extensions\n• import_combo_pack requires confirm=true";
         FooterText.Text = _isThai
             ? "รองรับ Streamable HTTP MCP ทั้ง initialize handshake และ protocol 2026-07-28 • ปล่อยแอปเปิดไว้ระหว่างใช้งาน"
             : "Supports Streamable HTTP MCP initialize handshakes and protocol 2026-07-28. Keep the app running while connected.";
@@ -90,12 +86,6 @@ public partial class McpWindow : Window
     {
         System.Windows.Clipboard.SetText(McpServer.Endpoint);
         ActivityText.Text = _isThai ? "คัดลอก endpoint แล้ว" : "Endpoint copied.";
-    }
-
-    private void CopyTokenButton_Click(object sender, RoutedEventArgs eventArgs)
-    {
-        System.Windows.Clipboard.SetText(_server.AccessToken);
-        ActivityText.Text = _isThai ? "คัดลอก access token แล้ว" : "Access token copied.";
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs eventArgs) => Close();

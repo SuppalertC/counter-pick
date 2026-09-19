@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using DotaComboBoard.Models;
@@ -47,12 +46,10 @@ public sealed class McpServer : IDisposable
         _boardPath = boardPath;
         _browserSyncServer = browserSyncServer;
         _patchProvider = patchProvider;
-        AccessToken = LoadOrCreateAccessToken();
     }
 
     public bool IsRunning { get; private set; }
     public string ErrorMessage { get; private set; } = string.Empty;
-    public string AccessToken { get; }
     public int RequestCount => _requestCount;
     public string LastToolName { get; private set; } = string.Empty;
 
@@ -91,11 +88,7 @@ public sealed class McpServer : IDisposable
                 [ServerName] = new
                 {
                     type = "http",
-                    url = Endpoint,
-                    headers = new Dictionary<string, string>
-                    {
-                        ["Authorization"] = $"Bearer {AccessToken}"
-                    }
+                    url = Endpoint
                 }
             }
         }, new JsonSerializerOptions(JsonOptions) { WriteIndented = true });
@@ -150,12 +143,6 @@ public sealed class McpServer : IDisposable
                 if (request.Method != "POST" || !request.Path.TrimEnd('/').Equals("/mcp", StringComparison.OrdinalIgnoreCase))
                 {
                     await WriteJsonAsync(stream, 404, new { error = "MCP endpoint not found." }, request.Origin, null, cancellationToken);
-                    return;
-                }
-
-                if (!HasValidAuthorization(request.Headers.GetValueOrDefault("Authorization")))
-                {
-                    await WriteJsonAsync(stream, 401, new { error = "Missing or invalid MCP access token." }, request.Origin, null, cancellationToken);
                     return;
                 }
 
@@ -610,19 +597,6 @@ public sealed class McpServer : IDisposable
                && property.ValueKind is JsonValueKind.True;
     }
 
-    private bool HasValidAuthorization(string? authorization)
-    {
-        const string prefix = "Bearer ";
-        if (authorization is null || !authorization.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        var supplied = Encoding.UTF8.GetBytes(authorization[prefix.Length..].Trim());
-        var expected = Encoding.UTF8.GetBytes(AccessToken);
-        return supplied.Length == expected.Length && CryptographicOperations.FixedTimeEquals(supplied, expected);
-    }
-
     private static bool IsAllowedOrigin(string? origin)
     {
         if (string.IsNullOrWhiteSpace(origin))
@@ -759,7 +733,7 @@ public sealed class McpServer : IDisposable
             builder.Append($"Access-Control-Allow-Origin: {origin}\r\nVary: Origin\r\n");
         }
         builder.Append("Access-Control-Allow-Methods: POST, OPTIONS\r\n");
-        builder.Append("Access-Control-Allow-Headers: Authorization, Content-Type, MCP-Protocol-Version\r\n");
+        builder.Append("Access-Control-Allow-Headers: Content-Type, MCP-Protocol-Version\r\n");
         builder.Append("Access-Control-Expose-Headers: MCP-Protocol-Version\r\n\r\n");
         return Encoding.ASCII.GetBytes(builder.ToString());
     }
@@ -787,30 +761,6 @@ public sealed class McpServer : IDisposable
         catch
         {
         }
-    }
-
-    private static string LoadOrCreateAccessToken()
-    {
-        var directory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "DotaComboBoard");
-        var path = Path.Combine(directory, "mcp-access-token.txt");
-        Directory.CreateDirectory(directory);
-        if (File.Exists(path))
-        {
-            var existing = File.ReadAllText(path).Trim();
-            if (existing.Length >= 32)
-            {
-                return existing;
-            }
-        }
-
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
-        File.WriteAllText(path, token);
-        return token;
     }
 
     private void RaiseStatusChanged() => StatusChanged?.Invoke(this, EventArgs.Empty);
